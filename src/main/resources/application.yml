@@ -1,0 +1,38 @@
+server:
+  port: ${SERVER-PORT:6210}
+
+spring:
+  application:
+    name: uni-notes-service
+  datasource:
+    url: ${DB-URL:jdbc:postgresql://localhost:6200/uni_notes_db}
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      driver-class-name: org.postgresql.Driver
+      username: ${DB-USER:root}
+      password: ${DB-PASSWORD:123}
+      maximum-pool-size: ${DB-MAXIMUM-POOL-SIZE:10}
+      transaction-isolation: ${DB-TRANSACTION-ISOLATION:TRANSACTION_REPEATABLE_READ}
+      auto-commit: ${DB-AUTO-COMMIT:true}
+  jpa:
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+  sql:
+    init:
+      mode: ${SQL-INIT-MODE:never}
+      schema-locations: database:/initDB.sql
+      data-locations: database:/populateDB.sql
+      encoding: utf-8
+  jackson:
+    default-property-inclusion: non_null
+
+logging:
+  level:
+    root: ${DEFAULT-LOGGING-LEVEL:INFO}
+
+debug: ${DEBUG:false}
+
+flk:
+  active:
+    Flk10000000
