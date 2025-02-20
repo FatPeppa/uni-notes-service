@@ -1,38 +1,47 @@
 server:
-  port: ${SERVER-PORT:6210}
+  port: ${SERVER-PORT:6210} #Порт веб-сервера
+  http2:
+    enabled: true
 
 spring:
   application:
-    name: uni-notes-service
+    name: notes-service
   datasource:
-    url: ${DB-URL:jdbc:postgresql://localhost:6200/uni_notes_db}
+    url: ${DB-URL:jdbc:postgresql://localhost:6200/uni_notes_db} #URL БД сервиса
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
       driver-class-name: org.postgresql.Driver
-      username: ${DB-USER:root}
-      password: ${DB-PASSWORD:123}
-      maximum-pool-size: ${DB-MAXIMUM-POOL-SIZE:10}
-      transaction-isolation: ${DB-TRANSACTION-ISOLATION:TRANSACTION_REPEATABLE_READ}
-      auto-commit: ${DB-AUTO-COMMIT:true}
+      username: ${DB-USER:root} #Имя пользователя к УЗ сервиса в БД
+      password: ${DB-PASSWORD:123} #Пароль к УЗ сервиса в БД
+      maximum-pool-size: ${DB-MAXIMUM-POOL-SIZE:10} #Максимальное количество соединений в пуле HikariCP
+      transaction-isolation: ${DB-TRANSACTION-ISOLATION:TRANSACTION_REPEATABLE_READ} #Уровень изоляции транзакций БД
+      auto-commit: ${DB-AUTO-COMMIT:true} #Режим работы с подключением к БД, в котором каждая операция выполняется в отдельной транзакции
   jpa:
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     open-in-view: false
   sql:
     init:
-      mode: ${SQL-INIT-MODE:never}
-      schema-locations: database:/initDB.sql
-      data-locations: database:/populateDB.sql
+      mode: ${SQL-INIT-MODE:always} #Инициализация схемы и наполнения БД при запуске. Возможные значения: always / never / embedded
+      schema-locations: classpath*:database:/initDB.sql
+      data-locations: classpath*:database:/populateDB.sql
       encoding: utf-8
+  security:
+    access-token-ttl: ${ACCESS-TOKEN-TTL:60} #Время жизни access-токена в минутах
+    refresh-token-ttl: ${REFRESH-TOKEN-TTL:24} #Время жизни refresh-токена в часах
   jackson:
     default-property-inclusion: non_null
 
+jwt:
+  access-token-key: '{"kty":"oct","k":"hi7S5RX5ZRZooHA0RKGctZ-KtR9FoESgCnH-3BNg5XI"}'
+  refresh-token-key: '{"kty":"oct","k":"956PBFst1FguLr5irJD-aQ"}'
+
 logging:
   level:
-    root: ${DEFAULT-LOGGING-LEVEL:INFO}
+    org.springframework.security.web: TRACE
+    root: ${DEFAULT-LOGGING-LEVEL:INFO} #Уровень логирования сервиса. Возможные значения: ERROR / WARN / INFO / DEBUG / TRACE
 
-debug: ${DEBUG:false}
+debug: ${DEBUG:false} #Режим запуска сервиса. Возможные значения: true (режим отладки) / false (обычный режим)
 
 flk:
-  active:
-    Flk10000000
+  active: Flk10000000, Flk10000001, Flk10000002 #Список активных ФЛК. Указанные номера должны соответствовать существующим в директории классов ФЛК
