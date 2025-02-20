@@ -5,6 +5,9 @@ import org.skyhigh.notesservice.data.dto.authentication.SignUpRequest;
 import org.skyhigh.notesservice.validation.exception.FlkException;
 
 
+/**
+ * Проверка на наличие пользователя в системе по электронной почте
+ */
 public class Flk10000002 extends CommonFlk {
     @Getter private static final String code = "10000002";
     @Getter private static final String message = "Пользователь c указанной электронной почтой уже существует";

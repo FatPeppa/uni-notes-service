@@ -1,6 +1,7 @@
 package org.skyhigh.notesservice.validation.advice;
 
 import lombok.extern.log4j.Log4j2;
+import org.skyhigh.notesservice.authentication.exception.EmailNotFoundException;
 import org.skyhigh.notesservice.authentication.exception.RefreshTokenDeactivatedException;
 import org.skyhigh.notesservice.authentication.exception.TokenAuthenticationException;
 import org.skyhigh.notesservice.data.dto.common.Error;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -91,7 +93,8 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     }
 
     @ResponseBody
-    @ExceptionHandler({RefreshTokenDeactivatedException.class, BadCredentialsException.class, TokenAuthenticationException.class})
+    @ExceptionHandler({RefreshTokenDeactivatedException.class, BadCredentialsException.class,
+            TokenAuthenticationException.class, EmailNotFoundException.class, UsernameNotFoundException.class})
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     protected ResponseEntity<?> systemExceptionHandler(Exception e) {
         if (e instanceof TokenAuthenticationException)

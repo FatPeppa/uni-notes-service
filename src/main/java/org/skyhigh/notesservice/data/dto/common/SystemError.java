@@ -1,16 +1,29 @@
 package org.skyhigh.notesservice.data.dto.common;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.time.ZonedDateTime;
 
 @Data
+@Schema(description = "Тело системной ошибки")
 public class SystemError {
-    protected String code;
-    protected String message;
+    @Schema(description = "8-значный код ошибки")
+    private String code;
+
+    @Schema(description = "Текст ошибки")
+    private String message;
+
+    @Schema(description = "Текущее время")
     private ZonedDateTime timestamp;
+
+    @Schema(description = "Сообщение для режима отладки")
     private String localizedMessage;
+
+    @Schema(description = "Сообщение для режима отладки")
     private String exceptionMessage;
+
+    @Schema(description = "Сообщение для режима отладки")
     private String stackTrace;
 
     private SystemError(SystemErrorBuilder systemErrorBuilder) {

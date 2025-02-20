@@ -16,21 +16,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-@Tag(name = "Аутентификация")
+@Tag(name = "Аутентификация и авторизация")
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @Operation(summary = "Регистрация пользователя")
-    @PostMapping("/sign-up")
+    @PostMapping(value = "/sign-up", consumes = "application/json", produces = "application/json")
     @ValidParams
-    public AuthenticationResponse signUp(@RequestBody SignUpRequest request) {
-        return authenticationService.signUp(request);
+    public AuthenticationResponse signUp(@RequestBody SignUpRequest signUpRequest) {
+        return authenticationService.signUp(signUpRequest);
     }
 
     @Operation(summary = "Авторизация пользователя")
-    @PostMapping("/sign-in")
+    @PostMapping(value = "/sign-in", consumes = "application/json", produces = "application/json")
     @ValidParams
-    public AuthenticationResponse signIn(@RequestBody SignInRequest request) {
-        return authenticationService.signIn(request);
+    public AuthenticationResponse signIn(@RequestBody SignInRequest signInRequest) {
+        return authenticationService.signIn(signInRequest);
     }
 }

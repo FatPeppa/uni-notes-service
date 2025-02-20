@@ -1,5 +1,6 @@
 package org.skyhigh.notesservice.config;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.skyhigh.notesservice.authentication.exception.TokenAuthenticationEntryPoint;
 import org.skyhigh.notesservice.authentication.filter.JwtAuthenticationFilter;
@@ -42,6 +43,9 @@ public class SecurityConfiguration {
     private final RefreshTokenFilter refreshTokenFilter;
     private final UserService userService;
     private final DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+
+    /*@Getter
+    private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();*/
 
     @Bean
     public AuthenticationProvider authenticationProvider() {

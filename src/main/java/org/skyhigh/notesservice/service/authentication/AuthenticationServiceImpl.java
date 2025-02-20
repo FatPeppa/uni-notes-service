@@ -43,13 +43,20 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public AuthenticationResponse signIn(SignInRequest request) {
+        var username = request.getUsername();
+
+        if (username == null || username.isEmpty()) {
+            var user = userService.getByEmail(request.getEmail());
+            username = user.getUsername();
+        }
+
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                request.getUsername(),
+                username,
                 request.getPassword()
         ));
 
         var user = userService.userDetailsService()
-                .loadUserByUsername(request.getUsername());
+                .loadUserByUsername(username);
 
         var accessToken = jwtService.generateAccessToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
