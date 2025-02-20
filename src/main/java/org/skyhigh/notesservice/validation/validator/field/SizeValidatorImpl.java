@@ -1,10 +1,8 @@
 package org.skyhigh.notesservice.validation.validator.field;
 
 import jakarta.validation.ValidationException;
-import org.skyhigh.notesservice.config.SecurityConfiguration;
 import org.skyhigh.notesservice.validation.annotation.Size;
 import org.skyhigh.notesservice.validation.exception.IncorrectFieldSizeException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.lang.reflect.Field;
 

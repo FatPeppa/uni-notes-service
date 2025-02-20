@@ -1,6 +1,5 @@
 package org.skyhigh.notesservice.config;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.skyhigh.notesservice.authentication.exception.TokenAuthenticationEntryPoint;
 import org.skyhigh.notesservice.authentication.filter.JwtAuthenticationFilter;
