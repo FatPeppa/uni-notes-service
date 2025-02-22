@@ -12,6 +12,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.ZonedDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
@@ -27,6 +29,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.ROLE_USER)
+                .registerDate(ZonedDateTime.now())
+                .lastLogonDate(ZonedDateTime.now())
                 .build();
 
         userService.create(user);
@@ -60,6 +64,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         var accessToken = jwtService.generateAccessToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
+
+        userService.updateLastLogonDateByUsername(username, ZonedDateTime.now());
+
         return AuthenticationResponse.builder()
                 .accessToken(accessToken)
                 .accessTokenExpiry(jwtService.extractAccessTokenExpiration(accessToken).toString())

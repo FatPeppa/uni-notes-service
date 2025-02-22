@@ -2,6 +2,7 @@ package org.skyhigh.notesservice.service;
 
 import lombok.RequiredArgsConstructor;
 import org.skyhigh.notesservice.data.entity.User;
+import org.skyhigh.notesservice.repository.TagRepository;
 import org.skyhigh.notesservice.repository.UserRepository;
 import org.skyhigh.notesservice.validation.exception.FlkException;
 import org.skyhigh.notesservice.validation.flk.Flk10000001;
@@ -10,6 +11,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.time.ZonedDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -68,5 +71,10 @@ public class UserServiceImpl implements UserService {
     public User getCurrentUser() {
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
         return getByUsername(username);
+    }
+
+    @Override
+    public void updateLastLogonDateByUsername(String username, ZonedDateTime lastLogonDate) {
+        userRepository.updateLastLogonDateByUsername(username, lastLogonDate);
     }
 }
