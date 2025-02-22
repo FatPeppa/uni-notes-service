@@ -1,13 +1,19 @@
 server:
-  port: ${SERVER-PORT:6210} #Порт веб-сервера
+  port: ${WEB-SERVER-PORT:6210} #Порт веб-сервера
   http2:
     enabled: true
 
 spring:
   application:
     name: notes-service
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database: postgresql
+    hibernate:
+      ddl-auto: ${DDL-AUTO-MODE:none} # Режим автоматического запуска DDL-скрипта БД. Возможные значения: none, update, create, create-drop, validate
+    open-in-view: false
   datasource:
-    url: ${DB-URL:jdbc:postgresql://localhost:6200/uni_notes_db} #URL БД сервиса
+    url: jdbc:postgresql://${DB-SERVER-HOST:localhost}:${DB-SERVER-PORT:6200}/${DB-NAME:uni_notes_db} #URL БД сервиса
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
       driver-class-name: org.postgresql.Driver
@@ -16,21 +22,19 @@ spring:
       maximum-pool-size: ${DB-MAXIMUM-POOL-SIZE:10} #Максимальное количество соединений в пуле HikariCP
       transaction-isolation: ${DB-TRANSACTION-ISOLATION:TRANSACTION_REPEATABLE_READ} #Уровень изоляции транзакций БД
       auto-commit: ${DB-AUTO-COMMIT:true} #Режим работы с подключением к БД, в котором каждая операция выполняется в отдельной транзакции
-  jpa:
-    database: postgresql
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    open-in-view: false
-  sql:
-    init:
-      mode: ${SQL-INIT-MODE:always} #Инициализация схемы и наполнения БД при запуске. Возможные значения: always / never / embedded
-      schema-locations: classpath*:database:/initDB.sql
-      data-locations: classpath*:database:/populateDB.sql
-      encoding: utf-8
+      connection-timeout: ${DB-CONNECTION-TIMEOUT:500000} #Таймаут соединений HikariCP в миллисекундах
+      idle-timeout: ${DB-CONNECTION-IDLE-TIMEOUT:300000} #Время жизни неактивных соединений в пуле HikariCP в миллисекундах
+      max-lifetime: ${DB-CONNECTION-MAX-LIFETIME:900000} #Время жизни соединений в пуде HikariCP в миллисекундах
+      minimum-idle: ${DB-POOL-MINIMUM-IDLE-CONNECTIONS:2} #Минимальное количество свободных подключений, которые пул HikariCP будет всегда поддерживать
   security:
     access-token-ttl: ${ACCESS-TOKEN-TTL:60} #Время жизни access-токена в минутах
     refresh-token-ttl: ${REFRESH-TOKEN-TTL:24} #Время жизни refresh-токена в часах
   jackson:
     default-property-inclusion: non_null
+  devtools:
+    restart:
+      enabled: ${DEVTOOLS-RESTART-ENABLED:false} #Активация devtools независимо от загрузчика классов
+    add-properties: ${DEVTOOLS-ADD-PROPERTIES:false} #Применение параметров режима разработчика по умолчанию
 
 jwt:
   access-token-key: '{"kty":"oct","k":"hi7S5RX5ZRZooHA0RKGctZ-KtR9FoESgCnH-3BNg5XI"}'
@@ -41,7 +45,8 @@ logging:
     org.springframework.security.web: TRACE
     root: ${DEFAULT-LOGGING-LEVEL:INFO} #Уровень логирования сервиса. Возможные значения: ERROR / WARN / INFO / DEBUG / TRACE
 
-debug: ${DEBUG:false} #Переключать режима отладки сервиса. Возможные значения: true (режим отладки) / false (обычный режим)
+debug:
+  ${DEBUG:false} #Переключатель режима отладки сервиса. Возможные значения: true (режим отладки) / false (обычный режим)
 
 flk:
   active: Flk10000000, Flk10000001, Flk10000002, Flk10000003 #Список активных ФЛК. Указанные номера должны соответствовать существующим в директории классов ФЛК
