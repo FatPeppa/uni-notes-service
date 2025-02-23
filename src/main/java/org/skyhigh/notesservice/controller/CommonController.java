@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/common")
+@RequestMapping("/common/v1")
 @RequiredArgsConstructor
 @Tag(name = "Общие методы")
 public class CommonController {

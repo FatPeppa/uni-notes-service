@@ -23,7 +23,7 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class JwtLogoutFilter extends OncePerRequestFilter {
-    private final RequestMatcher requestMatcher = new AntPathRequestMatcher("/auth/logout", HttpMethod.POST.name());
+    private final RequestMatcher requestMatcher = new AntPathRequestMatcher("/auth/v1/logout", HttpMethod.POST.name());
 
     public static final String BEARER_PREFIX = "Bearer ";
     public static final String HEADER_NAME = "Authorization";

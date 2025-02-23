@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/system")
+@RequestMapping("/system/v1")
 @RequiredArgsConstructor
 @Tag(name = "Системные методы")
 public class SystemController {

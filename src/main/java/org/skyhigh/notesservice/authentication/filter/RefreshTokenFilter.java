@@ -26,7 +26,7 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class RefreshTokenFilter extends OncePerRequestFilter {
-    private final RequestMatcher requestMatcher = new AntPathRequestMatcher("/auth/refresh", HttpMethod.POST.name());
+    private final RequestMatcher requestMatcher = new AntPathRequestMatcher("/auth/v1/refresh", HttpMethod.POST.name());
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 

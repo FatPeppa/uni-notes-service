@@ -200,6 +200,9 @@ ALTER TABLE media_metadata
 ALTER TABLE media_metadata
     DROP CONSTRAINT IF EXISTS FK_media_metadata_users;
 
+ALTER TABLE media_metadata
+    DROP CONSTRAINT IF EXISTS FK_media_metadata_media_type;
+
 ALTER TABLE note
     DROP CONSTRAINT IF EXISTS FK_note_category;
 
