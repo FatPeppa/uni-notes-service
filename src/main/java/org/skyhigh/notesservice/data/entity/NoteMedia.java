@@ -14,14 +14,12 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "note_media")
-@IdClass(NoteMediaId.class)
+@Table(name = "note_media", schema = "public")
 public class NoteMedia {
     @Id
     @Column(name = "note_id", nullable = false)
     private Long noteId;
 
-    @Id
     @Column(name = "media_id", nullable = false)
     private UUID mediaId;
 

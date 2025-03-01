@@ -28,7 +28,12 @@ public class AnnotationBasedParamValidator {
 
         Class<?> clazz = param.getClass();
 
-        if (clazz.equals(String.class) || clazz.equals(UUID.class) || clazz.equals(Integer.class))
+        if (clazz.equals(String.class)
+                || clazz.equals(UUID.class)
+                || clazz.equals(Integer.class)
+                || clazz.equals(Long.class)
+                || clazz.equals(Boolean.class)
+        )
             return;
 
         Field[] declaredFields = clazz.getDeclaredFields();

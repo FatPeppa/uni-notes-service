@@ -14,12 +14,12 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "note")
-public class Note {
+@Table(name = "note", schema = "public")
+public class Note implements Comparable<Note> {
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "note_id_seq")
-    @SequenceGenerator(name = "note_id_seq", sequenceName = "note_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "public.note_id_seq")
+    @SequenceGenerator(name = "public.note_id_seq", sequenceName = "public.note_id_seq", allocationSize = 1)
     private Long id;
 
     @Column(name = "user_id", nullable = false)
@@ -28,7 +28,13 @@ public class Note {
     @Column(name = "category_id")
     private Long categoryId;
 
-    @Column(name = "media_id", nullable = false)
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "text_extraction")
+    private String textExtraction;
+
+    @Column(name = "media_id")
     private UUID mediaId;
 
     @Column(name = "created_date", nullable = false)
@@ -36,4 +42,14 @@ public class Note {
 
     @Column(name = "last_change_date", nullable = false)
     private ZonedDateTime lastChangeDate;
+
+    @Override
+    public int compareTo(Note o) {
+        if (this.createdDate.isBefore(o.createdDate))
+            return -1;
+        else if (this.createdDate.isAfter(o.createdDate))
+            return 1;
+        else
+            return 0;
+    }
 }

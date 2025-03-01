@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.skyhigh.notesservice.data.dto.system.TokensTtl;
 import org.skyhigh.notesservice.service.system.SystemParametersServiceImpl;
 import org.skyhigh.notesservice.validation.aspect.ValidParams;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,7 +21,9 @@ public class SystemController {
     @Operation(summary = "Регистрация пользователя")
     @GetMapping(value = "/tokens-ttl", produces = "application/json")
     @ValidParams
-    public TokensTtl getTokensTtl() {
-        return systemParametersService.getTokensTtl();
+    public ResponseEntity<TokensTtl> getTokensTtl() {
+        return ResponseEntity.ok(systemParametersService.getTokensTtl());
     }
+
+    //TO DO: метод получения максимальных размеров и кол-ва файлов
 }

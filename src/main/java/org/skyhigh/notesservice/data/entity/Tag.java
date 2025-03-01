@@ -13,13 +13,16 @@ import java.time.ZonedDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "tag")
+@Table(name = "tag", schema = "public")
 public class Tag {
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tag_id_seq")
-    @SequenceGenerator(name = "tag_id_seq", sequenceName = "tag_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "public.tag_id_seq")
+    @SequenceGenerator(name = "public.tag_id_seq", sequenceName = "public.tag_id_seq", allocationSize = 1)
     private Long id;
+
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
     @Column(name = "name", nullable = false)
     private String name;

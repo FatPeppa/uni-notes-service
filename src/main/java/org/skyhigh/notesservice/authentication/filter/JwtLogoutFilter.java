@@ -31,7 +31,7 @@ public class JwtLogoutFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         if (requestMatcher.matches(request)) {
             var authHeader = request.getHeader(HEADER_NAME);
 
@@ -51,9 +51,9 @@ public class JwtLogoutFilter extends OncePerRequestFilter {
                         context.getAuthentication().getAuthorities()
                                 .contains(new SimpleGrantedAuthority("JWT_LOGOUT"))) {
 
-                    if (jwtService.isRefreshTokenValid(jwt, user))
+                    if (jwtService.isRefreshTokenValid(jwt, user)) {
                         jwtService.blockRefreshToken(jwt);
-                    else {
+                    } else {
                         throw new TokenAuthenticationException("Некорректный/отсутствует refresh токен");
                     }
 

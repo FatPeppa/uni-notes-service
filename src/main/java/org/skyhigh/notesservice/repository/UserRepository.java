@@ -19,6 +19,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Transactional
     @Modifying(clearAutomatically=true, flushAutomatically=true)
-    @Query(value = "UPDATE users SET last_logon_date = ?2 WHERE username = ?1", nativeQuery = true)
+    @Query(value = "UPDATE public.users SET last_logon_date = ?2 WHERE username = ?1", nativeQuery = true)
     void updateLastLogonDateByUsername(String username, ZonedDateTime lastLogonDate);
 }

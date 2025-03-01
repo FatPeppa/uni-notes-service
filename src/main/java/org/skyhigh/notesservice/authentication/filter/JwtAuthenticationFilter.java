@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.skyhigh.notesservice.authentication.exception.TokenAuthenticationException;
 import org.skyhigh.notesservice.service.authentication.JwtService;
-import org.skyhigh.notesservice.service.UserService;
+import org.skyhigh.notesservice.service.user.UserService;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -43,6 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         var authHeader = request.getHeader(HEADER_NAME);
+
         if (StringUtils.isEmpty(authHeader) || !StringUtils.startsWith(authHeader, BEARER_PREFIX)) {
             filterChain.doFilter(request, response);
             return;

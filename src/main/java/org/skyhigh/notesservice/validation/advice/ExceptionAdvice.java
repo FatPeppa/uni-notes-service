@@ -37,12 +37,13 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     @ResponseBody
     @ExceptionHandler({NullParameterException.class, IncorrectFieldSizeException.class, NotEmailException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    protected Error requestParameterExceptionHandler(RequestException ex) {
-        return Error.builder()
+    protected ResponseEntity<Error> requestParameterExceptionHandler(RequestException ex) {
+        return ResponseEntity.ok(Error.builder()
                 .code(ex.getCode())
                 .attributeName(ex.getParameterName())
                 .message(ex.getMessage())
-                .build();
+                .build()
+        );
     }
 
     @ResponseBody

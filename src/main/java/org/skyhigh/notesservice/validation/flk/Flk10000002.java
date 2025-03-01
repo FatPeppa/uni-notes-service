@@ -17,8 +17,8 @@ public class Flk10000002 extends CommonFlk {
         super(
                 "SignUpRequest",
                 SignUpRequest.class,
-                "10000002",
-                "Пользователь с указанной электронной почтой уже существует"
+                code,
+                message
         );
     }
 

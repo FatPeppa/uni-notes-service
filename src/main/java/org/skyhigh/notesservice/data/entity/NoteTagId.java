@@ -10,6 +10,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class NoteTagId implements Serializable {
-    private String noteId;
-    private String tagId;
+    public String noteId;
+    public String tagId;
 }

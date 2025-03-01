@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "media_type")
+@Table(name = "media_type", schema = "public")
 public class MediaType {
     @Id
     @Column(name = "code")

@@ -13,14 +13,12 @@ import java.time.ZonedDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "note_tag")
-@IdClass(NoteTagId.class)
+@Table(name = "note_tag", schema = "public")
 public class NoteTag {
     @Id
     @Column(name = "tag_id", nullable = false)
     private Long tagId;
 
-    @Id
     @Column(name = "note_id", nullable = false)
     private Long noteId;
 

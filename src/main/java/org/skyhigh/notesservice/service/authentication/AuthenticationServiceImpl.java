@@ -6,7 +6,7 @@ import org.skyhigh.notesservice.data.dto.authentication.SignInRequest;
 import org.skyhigh.notesservice.data.dto.authentication.SignUpRequest;
 import org.skyhigh.notesservice.data.entity.Role;
 import org.skyhigh.notesservice.data.entity.User;
-import org.skyhigh.notesservice.service.UserService;
+import org.skyhigh.notesservice.service.user.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,6 +31,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .role(Role.ROLE_USER)
                 .registerDate(ZonedDateTime.now())
                 .lastLogonDate(ZonedDateTime.now())
+                .blocked(false)
                 .build();
 
         userService.create(user);
@@ -50,7 +51,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var username = request.getUsername();
 
         if (username == null || username.isEmpty()) {
-            var user = userService.getByEmail(request.getEmail());
+            var user = userService.getUnblockedByEmail(request.getEmail());
             username = user.getUsername();
         }
 

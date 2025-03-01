@@ -5,11 +5,10 @@ import org.skyhigh.notesservice.authentication.exception.TokenAuthenticationEntr
 import org.skyhigh.notesservice.authentication.filter.JwtAuthenticationFilter;
 import org.skyhigh.notesservice.authentication.filter.JwtLogoutFilter;
 import org.skyhigh.notesservice.authentication.filter.RefreshTokenFilter;
-import org.skyhigh.notesservice.service.UserService;
+import org.skyhigh.notesservice.service.user.UserService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;

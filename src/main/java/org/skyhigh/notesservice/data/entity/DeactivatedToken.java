@@ -14,7 +14,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "t_deactivated_token")
+@Table(name = "t_deactivated_token", schema = "public")
 public class DeactivatedToken {
     @Id
     @Column(name = "id", unique = true)

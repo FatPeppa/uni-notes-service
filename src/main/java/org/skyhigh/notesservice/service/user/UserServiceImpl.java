@@ -1,16 +1,22 @@
-package org.skyhigh.notesservice.service;
+package org.skyhigh.notesservice.service.user;
 
 import lombok.RequiredArgsConstructor;
+import org.skyhigh.notesservice.authentication.exception.UserIsBlockedException;
+import org.skyhigh.notesservice.data.dto.common.SortDirection;
 import org.skyhigh.notesservice.data.entity.User;
-import org.skyhigh.notesservice.repository.TagRepository;
+import org.skyhigh.notesservice.data.entity.UserProperties;
+import org.skyhigh.notesservice.repository.UserPropertiesRepository;
 import org.skyhigh.notesservice.repository.UserRepository;
 import org.skyhigh.notesservice.validation.exception.FlkException;
 import org.skyhigh.notesservice.validation.flk.Flk10000001;
 import org.skyhigh.notesservice.validation.flk.Flk10000002;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
 
@@ -18,6 +24,7 @@ import java.time.ZonedDateTime;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final UserPropertiesRepository userPropertiesRepository;
 
     @Override
     public User save(User user) {
@@ -25,9 +32,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
+    @CacheEvict(value = {"CurrentUserCache", "UserByEmailCache", "UserByUsernameCache"}, allEntries = true)
     public User create(User user) {
         if (userRepository.existsByUsername(user.getUsername())) {
-            //throw new UsernameNotFoundException("User not found for email " + user.getUsername());
             throw FlkException.builder()
                     .flkCode(Flk10000001.getCode())
                     .flkMessage(Flk10000001.getMessage())
@@ -45,7 +53,15 @@ public class UserServiceImpl implements UserService {
                     .build();
         }
 
-        return save(user);
+        user = save(user);
+
+        userPropertiesRepository.save(UserProperties.builder()
+                .id(null)
+                .userId(user.getId())
+                .lastNotesCreatedDateSortDirection(SortDirection.DESC)
+                .build());
+
+        return user;
     }
 
     @Override
@@ -63,17 +79,37 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDetailsService userDetailsService() {
-        return this::getByUsername;
+    @Cacheable(value = "UserByUsernameCache", unless = "#result == null")
+    public User getUnblockedByUsername(String username) {
+        var user = userRepository.findByUsername(username);
+        if (user.isEmpty()) throw new UsernameNotFoundException("User not found for username " + username);
+        if (user.get().isBlocked()) throw new UserIsBlockedException("Found user is blocked and cannot be shown");
+        return user.get();
     }
 
     @Override
+    @Cacheable(value = "UserByEmailCache", unless = "#result == null")
+    public User getUnblockedByEmail(String email) {
+        var user = userRepository.findByEmail(email.toLowerCase());
+        if (user.isEmpty()) throw new UsernameNotFoundException("User not found for email " + email);
+        if (user.get().isBlocked()) throw new UserIsBlockedException("Found user is blocked and cannot be shown");
+        return user.get();
+    }
+
+    @Override
+    public UserDetailsService userDetailsService() {
+        return this::getUnblockedByUsername;
+    }
+
+    @Override
+    @Cacheable(value = "CurrentUserCache", unless = "#result == null")
     public User getCurrentUser() {
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return getByUsername(username);
+        return getUnblockedByUsername(username);
     }
 
     @Override
+    @CacheEvict(value = {"CurrentUserCache", "UserByEmailCache", "UserByUsernameCache"}, allEntries = true)
     public void updateLastLogonDateByUsername(String username, ZonedDateTime lastLogonDate) {
         userRepository.updateLastLogonDateByUsername(username, lastLogonDate);
     }

@@ -10,6 +10,7 @@ import org.skyhigh.notesservice.authentication.serialization.RefreshTokenJweStri
 import org.skyhigh.notesservice.data.entity.DeactivatedToken;
 import org.skyhigh.notesservice.repository.DeactivatedTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -137,6 +138,7 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
+    @CacheEvict(value = {"CurrentUserCache", "UserByEmailCache", "UserByUsernameCache"}, allEntries = true)
     public void blockRefreshToken(String token) {
         if (!deactivatedTokenRepository.existsById(extractTokenIdFromRefreshToken(token)))
             deactivatedTokenRepository.save(DeactivatedToken.builder()

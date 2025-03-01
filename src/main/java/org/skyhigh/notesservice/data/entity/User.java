@@ -18,12 +18,12 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "users")
+@Table(name = "users", schema = "public")
 public class User implements UserDetails {
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_id_seq")
-    @SequenceGenerator(name = "users_id_seq", sequenceName = "users_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "public.users_id_seq")
+    @SequenceGenerator(name = "public.users_id_seq", sequenceName = "public.users_id_seq", allocationSize = 1)
     private Long id;
 
     @Column(name = "username", unique = true, nullable = false)
@@ -44,6 +44,9 @@ public class User implements UserDetails {
 
     @Column(name = "last_logon_date", nullable = false)
     private ZonedDateTime lastLogonDate;
+
+    @Column(name = "blocked", nullable = false)
+    private boolean blocked;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
