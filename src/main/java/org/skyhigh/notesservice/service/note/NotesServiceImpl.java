@@ -373,7 +373,7 @@ public class NotesServiceImpl implements NotesService {
             //3.2 Фильтрация
             noteContents = new ArrayList<>(finalNoteContents).stream()
                     .filter(x -> {if (noteId != null) return ((ExtendedNoteBody) x).getId().equals(noteId); else return true;})
-                    .filter(x -> {if (noteName != null && noteName.isBlank()) return ((ExtendedNoteBody) x).getName().equals(noteName); else return true;})
+                    .filter(x -> {if (noteName != null && noteName.isBlank()) return ((ExtendedNoteBody) x).getName().contains(noteName); else return true;})
                     .filter(x -> {if (categoryId != null) return ((ExtendedNoteBody) x).getCategoryId().equals(categoryId); else return true;})
                     .filter(x -> {if (tagId != null) return noteTagRepository.findByNoteIdAndTagId(((ExtendedNoteBody) x).getId(), tagId) != null; else return true;})
                     .filter(x -> {if (beginDate != null) return x.getCreatedDate().isAfter(beginDate) || x.getCreatedDate().isEqual(beginDate); else return true;})
@@ -401,7 +401,7 @@ public class NotesServiceImpl implements NotesService {
             //3.2 Фильтрация
             noteContents = new ArrayList<>(finalNoteContents).stream()
                     .filter(x -> {if (noteId != null) return ((NoteBody) x).getId().equals(noteId); else return true;})
-                    .filter(x -> {if (noteName != null && !noteName.isBlank()) return ((NoteBody) x).getName().equals(noteName);else return true;})
+                    .filter(x -> {if (noteName != null && !noteName.isBlank()) return ((NoteBody) x).getName().contains(noteName);else return true;})
                     .filter(x -> {if (categoryId != null) return ((NoteBody) x).getCategoryId().equals(categoryId); else return true;})
                     .filter(x -> {if (tagId != null) return noteTagRepository.findByNoteIdAndTagId(((NoteBody) x).getId(), tagId) != null; else return true;})
                     .filter(x -> {if (beginDate != null) return x.getCreatedDate().isAfter(beginDate) || x.getCreatedDate().isEqual(beginDate); else return true;})

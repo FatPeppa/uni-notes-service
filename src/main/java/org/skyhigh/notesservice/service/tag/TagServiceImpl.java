@@ -151,7 +151,7 @@ public class TagServiceImpl implements TagService {
         //2.2 Фильтрация
         fullTagBodies = new ArrayList<>(finalFullTagBodies).stream()
                 .filter(x -> {if (tagId != null) return x.getTagId().equals(tagId); else return true;})
-                .filter(x -> {if (tagName != null && !tagName.isBlank()) return x.getName().equals(tagName); else return true;})
+                .filter(x -> {if (tagName != null && !tagName.isBlank()) return x.getName().contains(tagName); else return true;})
                 .filter(x -> {if (beginDate != null) return x.getCreatedDate().isAfter(beginDate) || x.getCreatedDate().isEqual(beginDate); else return true;})
                 .filter(x -> {if (endDate != null) return x.getCreatedDate().isBefore(endDate) || x.getCreatedDate().isEqual(endDate); else return true;})
                 .toList();
