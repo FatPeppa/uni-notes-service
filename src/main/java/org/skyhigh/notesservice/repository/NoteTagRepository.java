@@ -25,6 +25,6 @@ public interface NoteTagRepository extends JpaRepository<NoteTag, NoteTagId> {
 
     @Transactional
     @Modifying(clearAutomatically=true, flushAutomatically=true)
-    @Query(value = "INSERT INTO public.note_tag VALUES (?1, ?2, ?3)", nativeQuery = true)
+    @Query(value = "INSERT INTO public.note_tag VALUES (?2, ?1, ?3)", nativeQuery = true)
     void saveEntity(Long tagId, Long noteId, ZonedDateTime createdDate);
 }

@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
@@ -49,7 +50,7 @@ public class NotesController {
             @RequestParam(required = false) @Parameter(description = "ID заметки") Long noteId,
             @RequestParam(required = false) @Parameter(description = "Имя заметки") String noteName,
             @RequestParam(required = false) @Parameter(description = "ID категории заметки") Long categoryId,
-            @RequestParam(required = false) @Parameter(description = "ID тега заметки") Long tagId,
+            @RequestParam(required = false) @Parameter(description = "ID тегов заметки") List<Long> tagIds,
             @RequestParam(required = false) @Parameter(description = "Дата и время начала диапазона поиска") ZonedDateTime beginDate,
             @RequestParam(required = false) @Parameter(description = "Дата и время окончания диапазона поиска") ZonedDateTime endDate,
             @RequestParam(required = false, defaultValue = "false") @Parameter(description = "Признак отображения расширенных сведений") boolean extended,
@@ -62,7 +63,7 @@ public class NotesController {
                 noteId,
                 noteName,
                 categoryId,
-                tagId,
+                tagIds,
                 beginDate,
                 endDate,
                 extended,

@@ -309,7 +309,7 @@ public class NotesServiceImpl implements NotesService {
             Long noteId,
             String noteName,
             Long categoryId,
-            Long tagId,
+            List<Long> tagIds,
             ZonedDateTime beginDate,
             ZonedDateTime endDate,
             boolean extended,
@@ -327,6 +327,12 @@ public class NotesServiceImpl implements NotesService {
             return GetNotesResponse.builder()
                     .notes(new ArrayList<>())
                     .build();
+
+        if (tagIds != null && !tagIds.isEmpty() && tagIds.size() > 10)
+            throw new MultipleFlkException(List.of(FlkException.builder()
+                    .flkCode(Flk10000024.getCode())
+                    .flkMessage(Flk10000024.getMessage())
+                    .build()));
 
         var userId = userService.getCurrentUser().getId();
         var userProperties = userPropertiesRepository.findByUserId(userId);
@@ -365,7 +371,7 @@ public class NotesServiceImpl implements NotesService {
                         x.getTextExtraction(),
                         tags == null ? null : tags.stream().map(y -> new SimpleTagBody(y.getId(), y.getName())).toList(),
                         x.getMediaId(),
-                        imageIds == null ? null : imageIds.stream().map(NoteMedia::getMediaId).toList(),
+                        imageIds == null || !showImages ? null : imageIds.stream().map(NoteMedia::getMediaId).toList(),
                         x.getCreatedDate(),
                         x.getLastChangeDate()));
             });
@@ -375,7 +381,13 @@ public class NotesServiceImpl implements NotesService {
                     .filter(x -> {if (noteId != null) return ((ExtendedNoteBody) x).getNoteId().equals(noteId); else return true;})
                     .filter(x -> {if (noteName != null && noteName.isBlank()) return ((ExtendedNoteBody) x).getName().contains(noteName); else return true;})
                     .filter(x -> {if (categoryId != null) return ((ExtendedNoteBody) x).getCategoryId().equals(categoryId); else return true;})
-                    .filter(x -> {if (tagId != null) return noteTagRepository.findByNoteIdAndTagId(((ExtendedNoteBody) x).getNoteId(), tagId) != null; else return true;})
+                    .filter(x -> {
+                        if (tagIds != null && !tagIds.isEmpty()) {
+                            return tagIds.stream().allMatch(y -> noteTagRepository
+                                    .findByNoteIdAndTagId(((ExtendedNoteBody) x).getNoteId(), y) != null);
+                        }
+                        else return true;
+                    })
                     .filter(x -> {if (beginDate != null) return x.getCreatedDate().isAfter(beginDate) || x.getCreatedDate().isEqual(beginDate); else return true;})
                     .filter(x -> {if (endDate != null) return x.getCreatedDate().isBefore(endDate) || x.getCreatedDate().isEqual(endDate); else return true;})
                     .toList();
@@ -393,7 +405,7 @@ public class NotesServiceImpl implements NotesService {
                         x.getName(),
                         x.getTextExtraction(),
                         x.getMediaId(),
-                        imageIds == null ? null : imageIds.stream().map(NoteMedia::getMediaId).toList(),
+                        imageIds == null || !showImages ? null : imageIds.stream().map(NoteMedia::getMediaId).toList(),
                         x.getCreatedDate(),
                         x.getLastChangeDate()));
             });
@@ -403,7 +415,13 @@ public class NotesServiceImpl implements NotesService {
                     .filter(x -> {if (noteId != null) return ((NoteBody) x).getNoteId().equals(noteId); else return true;})
                     .filter(x -> {if (noteName != null && !noteName.isBlank()) return ((NoteBody) x).getName().contains(noteName);else return true;})
                     .filter(x -> {if (categoryId != null) return ((NoteBody) x).getCategoryId().equals(categoryId); else return true;})
-                    .filter(x -> {if (tagId != null) return noteTagRepository.findByNoteIdAndTagId(((NoteBody) x).getNoteId(), tagId) != null; else return true;})
+                    .filter(x -> {
+                        if (tagIds != null && !tagIds.isEmpty()) {
+                            return tagIds.stream().allMatch(y -> noteTagRepository
+                                    .findByNoteIdAndTagId(((ExtendedNoteBody) x).getNoteId(), y) != null);
+                        }
+                        else return true;
+                    })
                     .filter(x -> {if (beginDate != null) return x.getCreatedDate().isAfter(beginDate) || x.getCreatedDate().isEqual(beginDate); else return true;})
                     .filter(x -> {if (endDate != null) return x.getCreatedDate().isBefore(endDate) || x.getCreatedDate().isEqual(endDate); else return true;})
                     .toList();
