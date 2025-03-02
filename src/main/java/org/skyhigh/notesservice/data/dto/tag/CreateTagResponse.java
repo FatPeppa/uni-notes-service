@@ -15,7 +15,7 @@ import java.time.ZonedDateTime;
 @Schema(description = "Тело ответа на создание тега")
 public class CreateTagResponse {
     @Schema(description = "ID тега")
-    private Long id;
+    private Long tagId;
 
     @Schema(description = "Имя тега")
     private String name;

@@ -193,7 +193,7 @@ public class CategoryServiceImpl implements CategoryService {
 
             //2.2 Фильтрация
             categoryContents = new ArrayList<>(finalCategoryContents).stream()
-                    .filter(x -> {if (categoryId != null) return ((ExtendedCategoryBody) x).getId().equals(categoryId); else return true;})
+                    .filter(x -> {if (categoryId != null) return ((ExtendedCategoryBody) x).getCategoryId().equals(categoryId); else return true;})
                     .filter(x -> {if (categoryName != null && !categoryName.isBlank()) return ((ExtendedCategoryBody) x).getName().contains(categoryName); else return true;})
                     .filter(x -> {if (beginDate != null) return x.getCreatedDate().isAfter(beginDate) || x.getCreatedDate().isEqual(beginDate); else return true;})
                     .filter(x -> {if (endDate != null) return x.getCreatedDate().isBefore(endDate) || x.getCreatedDate().isEqual(endDate); else return true;})
@@ -213,7 +213,7 @@ public class CategoryServiceImpl implements CategoryService {
 
             //2.2 Фильтрация
             categoryContents = new ArrayList<>(finalCategoryContents).stream()
-                    .filter(x -> {if (categoryId != null) return ((CategoryBody) x).getId().equals(categoryId); else return true;})
+                    .filter(x -> {if (categoryId != null) return ((CategoryBody) x).getCategoryId().equals(categoryId); else return true;})
                     .filter(x -> {if (categoryName != null && !categoryName.isBlank()) return ((CategoryBody) x).getName().contains(categoryName); else return true;})
                     .filter(x -> {if (beginDate != null) return x.getCreatedDate().isAfter(beginDate) || x.getCreatedDate().isEqual(beginDate); else return true;})
                     .filter(x -> {if (endDate != null) return x.getCreatedDate().isBefore(endDate) || x.getCreatedDate().isEqual(endDate); else return true;})

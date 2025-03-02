@@ -17,7 +17,7 @@ import java.util.UUID;
 @Schema(description = "Тело заметки", subTypes = ExtendedNoteBody.class)
 public class NoteBody implements NoteContent {
     @Schema(description = "ID заметки")
-    protected Long id;
+    protected Long noteId;
 
     @Schema(description = "ID пользователя")
     protected Long userId;

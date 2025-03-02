@@ -15,7 +15,7 @@ import java.time.ZonedDateTime;
 @Schema(description = "Тело категории", subTypes = ExtendedCategoryBody.class)
 public class CategoryBody implements CategoryContent {
     @Schema(description = "ID категории")
-    protected Long id;
+    protected Long categoryId;
 
     @Schema(description = "ID пользователя")
     protected Long userId;

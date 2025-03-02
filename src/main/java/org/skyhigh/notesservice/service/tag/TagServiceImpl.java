@@ -58,7 +58,7 @@ public class TagServiceImpl implements TagService {
         tag = tagRepository.save(tag);
 
         return CreateTagResponse.builder()
-                .id(tag.getId())
+                .tagId(tag.getId())
                 .name(createTagRequest.getName())
                 .createdDate(createdDate)
                 .build();
