@@ -418,7 +418,7 @@ public class NotesServiceImpl implements NotesService {
                     .filter(x -> {
                         if (tagIds != null && !tagIds.isEmpty()) {
                             return tagIds.stream().allMatch(y -> noteTagRepository
-                                    .findByNoteIdAndTagId(((ExtendedNoteBody) x).getNoteId(), y) != null);
+                                    .findByNoteIdAndTagId(((NoteBody) x).getNoteId(), y) != null);
                         }
                         else return true;
                     })
