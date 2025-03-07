@@ -1,7 +1,7 @@
 package org.skyhigh.notesservice.service.category;
 
 import lombok.RequiredArgsConstructor;
-import org.skyhigh.notesservice.data.entity.Category;
+import org.skyhigh.notesservice.model.entity.Category;
 import org.skyhigh.notesservice.repository.CategoryRepository;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;

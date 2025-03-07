@@ -2,10 +2,16 @@ server:
   port: ${WEB-SERVER-PORT:6210} #Порт веб-сервера
   http2:
     enabled: true
+  undertow:
+    max-http-post-size: ${SERVER-MAX-HTTP-POST-SIZE:15MB}
 
 spring:
   application:
     name: notes-service
+  servlet:
+    multipart:
+      max-file-size: ${MAX-SERVLET-MULTIPART-FILE-SIZE:15MB}
+      max-request-size: ${MAX-SERVLET-MULTIPART-REQUEST-SIZE:15MB}
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -43,7 +49,7 @@ spring:
       enabled: ${DEVTOOLS-RESTART-ENABLED:false} #Активация devtools независимо от загрузчика классов
     add-properties: ${DEVTOOLS-ADD-PROPERTIES:false} #Применение параметров режима разработчика по умолчанию
   cache:
-    cache-names: NoteCache, NoteByNoteIdAndUserIdCache, CurrentUserCache, UserByEmailCache, UserByUsernameCache, CategoryCache, CategoryByIdAndUserIdCache, TagCache, TagByIdAndUserIdCache
+    cache-names: NoteCache, NoteByNoteIdAndUserIdCache, CurrentUserCache, UserByEmailCache, UserByUsernameCache, CategoryCache, CategoryByIdAndUserIdCache, TagCache, TagByIdAndUserIdCache, MediaMetadata
     type: caffeine
     caffeine:
       spec: maximumSize = ${MAXIMUM-CACHE-SIZE:500}, expireAfterAccess=${CACHE-EXPIRE-AFTER-ACCESS:300}s #Максимальная вместимость кэша в записях; Время хранения кэша после последнего доступа в секундах

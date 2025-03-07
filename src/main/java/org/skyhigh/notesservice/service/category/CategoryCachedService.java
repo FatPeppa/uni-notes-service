@@ -1,6 +1,6 @@
 package org.skyhigh.notesservice.service.category;
 
-import org.skyhigh.notesservice.data.entity.Category;
+import org.skyhigh.notesservice.model.entity.Category;
 
 import java.util.List;
 

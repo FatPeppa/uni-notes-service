@@ -1,6 +1,6 @@
 package org.skyhigh.notesservice.service.user;
 
-import org.skyhigh.notesservice.data.entity.User;
+import org.skyhigh.notesservice.model.entity.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.time.ZonedDateTime;

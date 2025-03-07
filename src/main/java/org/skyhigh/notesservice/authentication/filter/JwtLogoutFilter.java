@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.skyhigh.notesservice.authentication.exception.TokenAuthenticationException;
-import org.skyhigh.notesservice.data.entity.User;
+import org.skyhigh.notesservice.model.entity.User;
 import org.skyhigh.notesservice.service.authentication.JwtService;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

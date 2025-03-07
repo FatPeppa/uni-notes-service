@@ -1,9 +1,9 @@
 package org.skyhigh.notesservice.service.category;
 
 import org.skyhigh.notesservice.common.Paginator;
-import org.skyhigh.notesservice.data.dto.category.*;
-import org.skyhigh.notesservice.data.dto.common.SortDirection;
-import org.skyhigh.notesservice.data.entity.Category;
+import org.skyhigh.notesservice.model.dto.category.*;
+import org.skyhigh.notesservice.model.dto.common.SortDirection;
+import org.skyhigh.notesservice.model.entity.Category;
 import org.skyhigh.notesservice.repository.CategoryRepository;
 import org.skyhigh.notesservice.repository.NoteRepository;
 import org.skyhigh.notesservice.service.user.UserService;
@@ -172,7 +172,9 @@ public class CategoryServiceImpl implements CategoryService {
         var categories = categoryCachedService.getCategoriesByUserIdOrderedByCreateDateDescCached(userId);
 
         if (categories == null)
-            categories = new ArrayList<>();
+            return GetCategoriesResponse.builder()
+                    .categories(new ArrayList<>())
+                    .build();
 
         List<CategoryContent> categoryContents = null;
 

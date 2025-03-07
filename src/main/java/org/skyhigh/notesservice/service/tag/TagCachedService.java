@@ -1,6 +1,6 @@
 package org.skyhigh.notesservice.service.tag;
 
-import org.skyhigh.notesservice.data.entity.Tag;
+import org.skyhigh.notesservice.model.entity.Tag;
 
 import java.util.List;
 

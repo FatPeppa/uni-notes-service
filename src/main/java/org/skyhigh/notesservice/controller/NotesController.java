@@ -4,8 +4,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.skyhigh.notesservice.data.dto.common.SortDirection;
-import org.skyhigh.notesservice.data.dto.note.*;
+import org.skyhigh.notesservice.model.dto.common.SortDirection;
+import org.skyhigh.notesservice.model.dto.note.*;
 import org.skyhigh.notesservice.service.note.NotesService;
 import org.skyhigh.notesservice.validation.aspect.ValidParams;
 import org.springframework.http.ResponseEntity;
@@ -121,6 +121,28 @@ public class NotesController {
             @PathVariable("mediaId") @Parameter(description = "ID фото") UUID mediaId
     ) throws IOException {
         return ResponseEntity.ok(notesService.getImage(noteId, mediaId));
+    }
+
+    @Operation(summary = "Получить метаданные фото заметки")
+    @GetMapping(value = "/{noteId}/resources/images/metadata", produces = "application/json")
+    public ResponseEntity<GetNoteMediaMetadataResponse> getNoteMediaMetadata(
+            @PathVariable("noteId") @Parameter(description = "ID заметки") Long noteId,
+            @RequestParam(required = false) @Parameter(description = "ID файлов с фото заметки") List<UUID> mediaIds,
+            @RequestParam(required = false) @Parameter(description = "Дата и время начала диапазона поиска") ZonedDateTime beginDate,
+            @RequestParam(required = false) @Parameter(description = "Дата и время окончания диапазона поиска") ZonedDateTime endDate,
+            @RequestParam(required = false) @Parameter(description = "Направление сортировки по дате создания") SortDirection createdDateSortDirection,
+            @RequestParam(required = false, defaultValue = "50") @Parameter(description = "Количество записей в ответе") Integer limit,
+            @RequestParam(required = false, defaultValue = "1") @Parameter(description = "Смещение выдаваемой выборки") Integer offset
+    ) {
+        return ResponseEntity.ok(notesService.getNoteMediaMetadata(
+                noteId,
+                mediaIds,
+                beginDate,
+                endDate,
+                createdDateSortDirection,
+                limit,
+                offset
+        ));
     }
 
     @Operation(summary = "Получить текст заметки")

@@ -1,7 +1,7 @@
 package org.skyhigh.notesservice.service.tag;
 
 import lombok.RequiredArgsConstructor;
-import org.skyhigh.notesservice.data.entity.Tag;
+import org.skyhigh.notesservice.model.entity.Tag;
 import org.skyhigh.notesservice.repository.TagRepository;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;

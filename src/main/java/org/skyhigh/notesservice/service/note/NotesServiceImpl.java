@@ -1,10 +1,13 @@
 package org.skyhigh.notesservice.service.note;
 
 import org.skyhigh.notesservice.common.Paginator;
-import org.skyhigh.notesservice.data.dto.common.SortDirection;
-import org.skyhigh.notesservice.data.dto.note.*;
-import org.skyhigh.notesservice.data.dto.tag.SimpleTagBody;
-import org.skyhigh.notesservice.data.entity.*;
+import org.skyhigh.notesservice.model.dto.common.SortDirection;
+import org.skyhigh.notesservice.model.dto.note.*;
+import org.skyhigh.notesservice.model.dto.tag.SimpleTagBody;
+import org.skyhigh.notesservice.model.entity.MediaMetadata;
+import org.skyhigh.notesservice.model.entity.MediaTypeEnum;
+import org.skyhigh.notesservice.model.entity.Note;
+import org.skyhigh.notesservice.model.entity.NoteMedia;
 import org.skyhigh.notesservice.repository.*;
 import org.skyhigh.notesservice.service.resource.ResourceService;
 import org.skyhigh.notesservice.service.resource.SizeCheckableFileType;
@@ -121,7 +124,7 @@ public class NotesServiceImpl implements NotesService {
 
     @Override
     @Transactional
-    @CacheEvict(value = {"NoteCache", "NoteByNoteIdAndUserIdCache"}, allEntries = true)
+    @CacheEvict(value = {"NoteCache", "NoteByNoteIdAndUserIdCache", "MediaMetadata"}, allEntries = true)
     public UploadNoteImageResponse uploadNoteImage(Long noteId, MultipartFile image) throws IOException {
         List<FlkException> flkExceptions = new ArrayList<>();
         var userId = userService.getCurrentUser().getId();
@@ -348,7 +351,9 @@ public class NotesServiceImpl implements NotesService {
         var notes = notesCachedService.getNotesByUserIdOrderedByCreateDateDescCached(userId);
 
         if (notes == null)
-            notes = new ArrayList<>();
+            return GetNotesResponse.builder()
+                    .notes(new ArrayList<>())
+                    .build();
 
         List<NoteContent> noteContents = null;
 
@@ -573,7 +578,7 @@ public class NotesServiceImpl implements NotesService {
 
     @Override
     @Transactional
-    @CacheEvict(value = {"NoteCache", "NoteByNoteIdAndUserIdCache"}, allEntries = true)
+    @CacheEvict(value = {"NoteCache", "NoteByNoteIdAndUserIdCache", "MediaMetadata"}, allEntries = true)
     public void deleteNote(Long noteId, boolean deleteCascade) throws IOException {
         var userId = userService.getCurrentUser().getId();
 
@@ -613,7 +618,7 @@ public class NotesServiceImpl implements NotesService {
 
     @Override
     @Transactional
-    @CacheEvict(value = {"NoteCache", "NoteByNoteIdAndUserIdCache"}, allEntries = true)
+    @CacheEvict(value = {"NoteCache", "NoteByNoteIdAndUserIdCache", "MediaMetadata"}, allEntries = true)
     public void deleteImage(Long noteId, UUID mediaId) throws IOException {
         var userId = userService.getCurrentUser().getId();
 
@@ -717,6 +722,71 @@ public class NotesServiceImpl implements NotesService {
                     .build()));
 
         return resourceService.downloadTextFile(note.getMediaId().toString());
+    }
+
+    @Override
+    public GetNoteMediaMetadataResponse getNoteMediaMetadata(
+            Long noteId,
+            List<UUID> mediaIds,
+            ZonedDateTime beginDate,
+            ZonedDateTime endDate,
+            SortDirection createdDateSortDirection,
+            Integer limit,
+            Integer offset
+    ) {
+        if (limit <= 0 || offset <= 0)
+            return GetNoteMediaMetadataResponse.builder()
+                    .metadataBodyList(new ArrayList<>())
+                    .build();
+
+        if (beginDate != null && endDate != null && endDate.isBefore(beginDate))
+            return GetNoteMediaMetadataResponse.builder()
+                    .metadataBodyList(new ArrayList<>())
+                    .build();
+
+        var userId = userService.getCurrentUser().getId();
+
+        //1. Поиск метаданных файлов по дате в обратном порядке (от настоящего к прошлому)
+        var mediaMetadata = notesCachedService.getMediaMetadataByNoteIdAndUserIdOrderedByCreateDateDesc(noteId, userId);
+
+        if (mediaMetadata == null)
+            return GetNoteMediaMetadataResponse.builder()
+                    .metadataBodyList(new ArrayList<>())
+                    .build();
+
+        //2. Преобразование списка метаданных файлов к dto и фильтрация
+        List<MediaMetadataBody> mediaMetadataBodies = null;
+
+        //2.1 Маппинг к MediaMetadataBody
+        List<MediaMetadataBody> finalMediaMetadataBodies = new ArrayList<>();
+        mediaMetadata.forEach(x -> finalMediaMetadataBodies
+                .add(MediaMetadataBody.mapFromMediaMetadata(x)));
+
+        //2.2 Фильтрация
+        mediaMetadataBodies = new ArrayList<>(finalMediaMetadataBodies).stream()
+                .filter(x -> {
+                    if (mediaIds != null && !mediaIds.isEmpty()) {
+                        return mediaIds.stream().anyMatch(y -> y.equals(x.getMediaId()));
+                    }
+                    else return true;
+                })
+                .filter(x -> {if (beginDate != null) return x.getCreatedDate().isAfter(beginDate) || x.getCreatedDate().isEqual(beginDate); else return true;})
+                .filter(x -> {if (endDate != null) return x.getCreatedDate().isBefore(endDate) || x.getCreatedDate().isEqual(endDate); else return true;})
+                .toList();
+
+        //3. Сортировка в прямом порядке в случае необходимости
+        if (createdDateSortDirection == SortDirection.ASC)
+            mediaMetadataBodies = mediaMetadataBodies.stream().sorted().toList();
+
+        mediaMetadataBodies = Paginator.paginate(
+                mediaMetadataBodies,
+                offset,
+                limit
+        );
+
+        return GetNoteMediaMetadataResponse.builder()
+                .metadataBodyList(mediaMetadataBodies)
+                .build();
     }
 
     @Override

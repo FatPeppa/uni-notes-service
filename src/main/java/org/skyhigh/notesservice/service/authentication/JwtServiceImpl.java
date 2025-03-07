@@ -7,7 +7,7 @@ import org.skyhigh.notesservice.authentication.factory.AccessTokenFactory;
 import org.skyhigh.notesservice.authentication.factory.RefreshTokenFactory;
 import org.skyhigh.notesservice.authentication.serialization.AccessTokenJwsStringSerializer;
 import org.skyhigh.notesservice.authentication.serialization.RefreshTokenJweStringSerializer;
-import org.skyhigh.notesservice.data.entity.DeactivatedToken;
+import org.skyhigh.notesservice.model.entity.DeactivatedToken;
 import org.skyhigh.notesservice.repository.DeactivatedTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;

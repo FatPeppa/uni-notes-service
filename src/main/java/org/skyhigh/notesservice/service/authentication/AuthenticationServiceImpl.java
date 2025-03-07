@@ -1,11 +1,11 @@
 package org.skyhigh.notesservice.service.authentication;
 
 import lombok.RequiredArgsConstructor;
-import org.skyhigh.notesservice.data.dto.authentication.AuthenticationResponse;
-import org.skyhigh.notesservice.data.dto.authentication.SignInRequest;
-import org.skyhigh.notesservice.data.dto.authentication.SignUpRequest;
-import org.skyhigh.notesservice.data.entity.Role;
-import org.skyhigh.notesservice.data.entity.User;
+import org.skyhigh.notesservice.model.dto.authentication.AuthenticationResponse;
+import org.skyhigh.notesservice.model.dto.authentication.SignInRequest;
+import org.skyhigh.notesservice.model.dto.authentication.SignUpRequest;
+import org.skyhigh.notesservice.model.entity.Role;
+import org.skyhigh.notesservice.model.entity.User;
 import org.skyhigh.notesservice.service.user.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

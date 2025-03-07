@@ -55,10 +55,11 @@ CREATE TABLE IF NOT EXISTS public.note_media
 
 CREATE TABLE IF NOT EXISTS public.note_tag
 (
+    id bigint NOT NULL,
     note_id bigint NOT NULL,
     tag_id bigint NOT NULL,
     created_date timestamp with time zone NOT NULL,
-    CONSTRAINT pk_note_tag PRIMARY KEY (note_id, tag_id)
+    CONSTRAINT pk_note_tag PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS public.t_deactivated_token
@@ -170,6 +171,11 @@ CREATE INDEX IF NOT EXISTS "ixfk_note_media_note"
 CREATE INDEX IF NOT EXISTS "ixfk_note_tag_note"
     ON public.note_tag
     USING btree(note_id ASC)
+;
+
+CREATE UNIQUE INDEX IF NOT EXISTS "uix_note_id_tag_id_note_tag"
+    ON public.note_tag
+    USING btree(note_id ASC, tag_id ASC)
 ;
 
 CREATE INDEX IF NOT EXISTS "ixfk_note_tag_tag"
@@ -381,6 +387,15 @@ CREATE SEQUENCE IF NOT EXISTS public.tag_id_seq
 
 
 CREATE SEQUENCE IF NOT EXISTS public.user_properties_seq
+    INCREMENT BY 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    START 1
+    CACHE 1
+    NO CYCLE
+;
+
+CREATE SEQUENCE IF NOT EXISTS public.note_tag_seq
     INCREMENT BY 1
     MINVALUE 1
     MAXVALUE 9223372036854775807

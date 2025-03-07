@@ -2,9 +2,9 @@ package org.skyhigh.notesservice.service.tag;
 
 import lombok.RequiredArgsConstructor;
 import org.skyhigh.notesservice.common.Paginator;
-import org.skyhigh.notesservice.data.dto.common.SortDirection;
-import org.skyhigh.notesservice.data.dto.tag.*;
-import org.skyhigh.notesservice.data.entity.Tag;
+import org.skyhigh.notesservice.model.dto.common.SortDirection;
+import org.skyhigh.notesservice.model.dto.tag.*;
+import org.skyhigh.notesservice.model.entity.Tag;
 import org.skyhigh.notesservice.repository.NoteTagRepository;
 import org.skyhigh.notesservice.repository.TagRepository;
 import org.skyhigh.notesservice.service.user.UserService;
@@ -131,7 +131,9 @@ public class TagServiceImpl implements TagService {
         var tags = tagCachedService.getTagsByUserIdOrderedByCreateDateDescCached(userId);
 
         if (tags == null)
-            tags = new ArrayList<>();
+            return GetTagsResponse.builder()
+                    .tags(new ArrayList<>())
+                    .build();
 
         //2. Преобразование списка тегов к dto и фильтрация
         List<FullTagBody> fullTagBodies = null;

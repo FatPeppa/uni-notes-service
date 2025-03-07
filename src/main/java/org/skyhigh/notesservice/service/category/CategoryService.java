@@ -1,10 +1,10 @@
 package org.skyhigh.notesservice.service.category;
 
-import org.skyhigh.notesservice.data.dto.category.CreateCategoryRequest;
-import org.skyhigh.notesservice.data.dto.category.CreateCategoryResponse;
-import org.skyhigh.notesservice.data.dto.category.GetCategoriesResponse;
-import org.skyhigh.notesservice.data.dto.category.UpdateCategoryRequest;
-import org.skyhigh.notesservice.data.dto.common.SortDirection;
+import org.skyhigh.notesservice.model.dto.category.CreateCategoryRequest;
+import org.skyhigh.notesservice.model.dto.category.CreateCategoryResponse;
+import org.skyhigh.notesservice.model.dto.category.GetCategoriesResponse;
+import org.skyhigh.notesservice.model.dto.category.UpdateCategoryRequest;
+import org.skyhigh.notesservice.model.dto.common.SortDirection;
 
 import java.time.ZonedDateTime;
 

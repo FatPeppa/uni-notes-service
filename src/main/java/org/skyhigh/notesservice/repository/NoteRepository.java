@@ -1,7 +1,7 @@
 package org.skyhigh.notesservice.repository;
 
 import jakarta.transaction.Transactional;
-import org.skyhigh.notesservice.data.entity.Note;
+import org.skyhigh.notesservice.model.entity.Note;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

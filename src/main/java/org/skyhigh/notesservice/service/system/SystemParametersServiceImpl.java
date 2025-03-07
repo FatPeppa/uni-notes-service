@@ -1,6 +1,6 @@
 package org.skyhigh.notesservice.service.system;
 
-import org.skyhigh.notesservice.data.dto.system.TokensTtl;
+import org.skyhigh.notesservice.model.dto.system.TokensTtl;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 

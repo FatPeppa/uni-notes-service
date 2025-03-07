@@ -1,6 +1,6 @@
 package org.skyhigh.notesservice.service.resource;
 
-import org.skyhigh.notesservice.data.entity.MediaTypeEnum;
+import org.skyhigh.notesservice.model.entity.MediaTypeEnum;
 import org.skyhigh.notesservice.repository.S3ObjectRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;

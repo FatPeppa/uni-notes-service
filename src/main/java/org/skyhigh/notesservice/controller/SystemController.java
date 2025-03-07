@@ -3,7 +3,7 @@ package org.skyhigh.notesservice.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.skyhigh.notesservice.data.dto.system.TokensTtl;
+import org.skyhigh.notesservice.model.dto.system.TokensTtl;
 import org.skyhigh.notesservice.service.system.SystemParametersServiceImpl;
 import org.skyhigh.notesservice.validation.aspect.ValidParams;
 import org.springframework.http.ResponseEntity;

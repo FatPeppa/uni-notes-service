@@ -1,6 +1,6 @@
 package org.skyhigh.notesservice.service.resource;
 
-import org.skyhigh.notesservice.data.entity.MediaTypeEnum;
+import org.skyhigh.notesservice.model.entity.MediaTypeEnum;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;

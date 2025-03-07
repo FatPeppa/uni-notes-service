@@ -1,10 +1,10 @@
 package org.skyhigh.notesservice.service.tag;
 
-import org.skyhigh.notesservice.data.dto.common.SortDirection;
-import org.skyhigh.notesservice.data.dto.tag.CreateTagRequest;
-import org.skyhigh.notesservice.data.dto.tag.CreateTagResponse;
-import org.skyhigh.notesservice.data.dto.tag.GetTagsResponse;
-import org.skyhigh.notesservice.data.dto.tag.UpdateTagRequest;
+import org.skyhigh.notesservice.model.dto.common.SortDirection;
+import org.skyhigh.notesservice.model.dto.tag.CreateTagRequest;
+import org.skyhigh.notesservice.model.dto.tag.CreateTagResponse;
+import org.skyhigh.notesservice.model.dto.tag.GetTagsResponse;
+import org.skyhigh.notesservice.model.dto.tag.UpdateTagRequest;
 
 import java.time.ZonedDateTime;
 

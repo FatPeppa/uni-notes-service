@@ -2,9 +2,9 @@ package org.skyhigh.notesservice.service.user;
 
 import lombok.RequiredArgsConstructor;
 import org.skyhigh.notesservice.authentication.exception.UserIsBlockedException;
-import org.skyhigh.notesservice.data.dto.common.SortDirection;
-import org.skyhigh.notesservice.data.entity.User;
-import org.skyhigh.notesservice.data.entity.UserProperties;
+import org.skyhigh.notesservice.model.dto.common.SortDirection;
+import org.skyhigh.notesservice.model.entity.User;
+import org.skyhigh.notesservice.model.entity.UserProperties;
 import org.skyhigh.notesservice.repository.UserPropertiesRepository;
 import org.skyhigh.notesservice.repository.UserRepository;
 import org.skyhigh.notesservice.validation.exception.FlkException;
