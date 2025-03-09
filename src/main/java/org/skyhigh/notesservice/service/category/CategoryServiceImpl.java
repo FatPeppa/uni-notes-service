@@ -16,6 +16,7 @@ import org.skyhigh.notesservice.validation.flk.Flk10000020;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
@@ -48,7 +49,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     @CacheEvict(value = {"CategoryCache", "CategoryByIdAndUserIdCache"}, allEntries = true)
     public CreateCategoryResponse createCategory(CreateCategoryRequest createCategoryRequest) {
         var userId = userService.getCurrentUser().getId();
@@ -89,7 +90,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     @CacheEvict(value = {"CategoryCache", "CategoryByIdAndUserIdCache"}, allEntries = true)
     public void updateCategory(Long categoryId, UpdateCategoryRequest updateCategoryRequest) {
         var userId = userService.getCurrentUser().getId();
@@ -120,7 +121,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     @CacheEvict(value = {"CategoryCache", "CategoryByIdAndUserIdCache"}, allEntries = true)
     public void deleteCategory(Long categoryId) {
         var userId = userService.getCurrentUser().getId();

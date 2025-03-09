@@ -14,6 +14,7 @@ import org.skyhigh.notesservice.validation.flk.Flk10000017;
 import org.skyhigh.notesservice.validation.flk.Flk10000021;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
@@ -32,7 +33,7 @@ public class TagServiceImpl implements TagService {
     private final NoteTagRepository noteTagRepository;
 
     @Override
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     @CacheEvict(value = {"TagCache", "TagByIdAndUserIdCache"}, allEntries = true)
     public CreateTagResponse createTag(CreateTagRequest createTagRequest) {
         var userId = userService.getCurrentUser().getId();
@@ -65,7 +66,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     @CacheEvict(value = {"TagCache", "TagByIdAndUserIdCache"}, allEntries = true)
     public void updateTag(Long tagId, UpdateTagRequest updateTagRequest) {
         var userId = userService.getCurrentUser().getId();
@@ -96,7 +97,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     @CacheEvict(value = {"TagCache", "TagByIdAndUserIdCache"}, allEntries = true)
     public void deleteTag(Long tagId) {
         var userId = userService.getCurrentUser().getId();

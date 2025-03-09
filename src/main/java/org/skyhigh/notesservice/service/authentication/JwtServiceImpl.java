@@ -14,6 +14,8 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.time.Instant;
@@ -139,6 +141,7 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     @CacheEvict(value = {"CurrentUserCache", "UserByEmailCache", "UserByUsernameCache"}, allEntries = true)
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public void blockRefreshToken(String token) {
         if (!deactivatedTokenRepository.existsById(extractTokenIdFromRefreshToken(token)))
             deactivatedTokenRepository.save(DeactivatedToken.builder()

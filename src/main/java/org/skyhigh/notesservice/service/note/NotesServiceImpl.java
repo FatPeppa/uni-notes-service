@@ -18,6 +18,7 @@ import org.skyhigh.notesservice.validation.flk.*;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -74,7 +75,7 @@ public class NotesServiceImpl implements NotesService {
     }
 
     @Override
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     @CacheEvict(value = {"NoteCache", "NoteByNoteIdAndUserIdCache"}, allEntries = true)
     public CreateNoteResponse createNote(CreateNoteRequest createNoteRequest) throws IOException {
         List<FlkException> flkExceptions = new ArrayList<>();
@@ -123,7 +124,7 @@ public class NotesServiceImpl implements NotesService {
     }
 
     @Override
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     @CacheEvict(value = {"NoteCache", "NoteByNoteIdAndUserIdCache", "MediaMetadata"}, allEntries = true)
     public UploadNoteImageResponse uploadNoteImage(Long noteId, MultipartFile image) throws IOException {
         List<FlkException> flkExceptions = new ArrayList<>();
@@ -215,7 +216,7 @@ public class NotesServiceImpl implements NotesService {
     }
 
     @Override
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     @CacheEvict(value = {"NoteCache", "NoteByNoteIdAndUserIdCache"}, allEntries = true)
     public UploadNoteTextResponse uploadNoteText(Long noteId, MultipartFile text) throws IOException {
         List<FlkException> flkExceptions = new ArrayList<>();
@@ -449,7 +450,7 @@ public class NotesServiceImpl implements NotesService {
     }
 
     @Override
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     @CacheEvict(value = {"NoteCache", "NoteByNoteIdAndUserIdCache"}, allEntries = true)
     public void updateNoteBody(Long noteId, UpdateNoteBodyRequest updateNoteBodyRequest) {
         List<FlkException> flkExceptions = new ArrayList<>();
@@ -494,7 +495,7 @@ public class NotesServiceImpl implements NotesService {
     }
 
     @Override
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     @CacheEvict(value = {"NoteCache", "NoteByNoteIdAndUserIdCache"}, allEntries = true)
     public UpdateNoteTextResponse updateNoteText(Long noteId, MultipartFile text) throws IOException {
         List<FlkException> flkExceptions = new ArrayList<>();
@@ -577,7 +578,7 @@ public class NotesServiceImpl implements NotesService {
     }
 
     @Override
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     @CacheEvict(value = {"NoteCache", "NoteByNoteIdAndUserIdCache", "MediaMetadata"}, allEntries = true)
     public void deleteNote(Long noteId, boolean deleteCascade) throws IOException {
         var userId = userService.getCurrentUser().getId();
@@ -617,7 +618,7 @@ public class NotesServiceImpl implements NotesService {
     }
 
     @Override
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     @CacheEvict(value = {"NoteCache", "NoteByNoteIdAndUserIdCache", "MediaMetadata"}, allEntries = true)
     public void deleteImage(Long noteId, UUID mediaId) throws IOException {
         var userId = userService.getCurrentUser().getId();
@@ -790,7 +791,7 @@ public class NotesServiceImpl implements NotesService {
     }
 
     @Override
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     @CacheEvict(value = {"NoteCache", "NoteByNoteIdAndUserIdCache"}, allEntries = true)
     public void updateNoteTags(Long noteId, UpdateNoteTagsRequest updateNoteTagsRequest) {
         var userId = userService.getCurrentUser().getId();
@@ -829,7 +830,7 @@ public class NotesServiceImpl implements NotesService {
     }
 
     @Override
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     @CacheEvict(value = {"NoteCache", "NoteByNoteIdAndUserIdCache"}, allEntries = true)
     public void updateNoteCategory(Long noteId, UpdateNoteCategoryRequest updateNoteCategoryRequest) {
         var userId = userService.getCurrentUser().getId();
