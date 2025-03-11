@@ -80,7 +80,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     protected SystemError systemExceptionHandler(RuntimeException e) {
-        if (!(e instanceof RequestException) && !(e instanceof MultipleFlkException)) {
+        if ((!(e instanceof RequestException) && !(e instanceof MultipleFlkException)) || e instanceof InternalServerErrorException) {
             return new SystemError.SystemErrorBuilder()
                     .setCode(InternalServerErrorException.getStaticCode())
                     .setMessage(InternalServerErrorException.getStaticMessage())
@@ -97,7 +97,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     @ExceptionHandler({RefreshTokenDeactivatedException.class, BadCredentialsException.class,
             TokenAuthenticationException.class, EmailNotFoundException.class, UsernameNotFoundException.class})
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    protected ResponseEntity<?> systemExceptionHandler(Exception e) {
+    protected ResponseEntity<?> accessDeniedExceptionHandler(Exception e) {
         if (e instanceof TokenAuthenticationException)
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
