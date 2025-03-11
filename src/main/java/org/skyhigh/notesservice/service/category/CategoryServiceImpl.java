@@ -6,6 +6,7 @@ import org.skyhigh.notesservice.model.dto.common.SortDirection;
 import org.skyhigh.notesservice.model.entity.Category;
 import org.skyhigh.notesservice.repository.CategoryRepository;
 import org.skyhigh.notesservice.repository.NoteRepository;
+import org.skyhigh.notesservice.service.search.SearchService;
 import org.skyhigh.notesservice.service.user.UserService;
 import org.skyhigh.notesservice.validation.exception.FlkException;
 import org.skyhigh.notesservice.validation.exception.MultipleFlkException;
@@ -31,6 +32,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final NoteRepository noteRepository;
+    private final SearchService searchService;
 
     private final Integer maxUsersCategoriesAmount;
 
@@ -38,13 +40,14 @@ public class CategoryServiceImpl implements CategoryService {
             CategoryCachedService categoryCachedService,
             UserService userService,
             CategoryRepository categoryRepository,
-            NoteRepository noteRepository,
+            NoteRepository noteRepository, SearchService searchService,
             @Qualifier("MaxUsersCategoriesAmount") Integer maxUsersCategoriesAmount
     ) {
         this.categoryCachedService = categoryCachedService;
         this.userService = userService;
         this.categoryRepository = categoryRepository;
         this.noteRepository = noteRepository;
+        this.searchService = searchService;
         this.maxUsersCategoriesAmount = maxUsersCategoriesAmount;
     }
 
@@ -111,12 +114,26 @@ public class CategoryServiceImpl implements CategoryService {
                     .flkMessage(Flk10000018.getMessage())
                     .build()));
 
+        var notes = noteRepository.findByUserIdAndCategoryId(
+                userId,
+                category.getId()
+        );
+
+        var lastChangeDate = ZonedDateTime.now();
+        notes.forEach(x -> searchService.updateNoteCategoryName(
+                x.getId(),
+                userId,
+                categoryId,
+                updateCategoryRequest.getName(),
+                lastChangeDate
+        ));
+
         //3. Обновить категорию
         categoryRepository.updateCategoryNameAndDescriptionAndLastChangeDateById(
                 categoryId,
                 updateCategoryRequest.getName(),
                 updateCategoryRequest.getDescription(),
-                ZonedDateTime.now()
+                lastChangeDate
         );
     }
 

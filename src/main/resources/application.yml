@@ -49,10 +49,17 @@ spring:
       enabled: ${DEVTOOLS-RESTART-ENABLED:false} #Активация devtools независимо от загрузчика классов
     add-properties: ${DEVTOOLS-ADD-PROPERTIES:false} #Применение параметров режима разработчика по умолчанию
   cache:
-    cache-names: NoteCache, NoteByNoteIdAndUserIdCache, CurrentUserCache, UserByEmailCache, UserByUsernameCache, CategoryCache, CategoryByIdAndUserIdCache, TagCache, TagByIdAndUserIdCache, MediaMetadata
+    cache-names: NoteCache, NoteByNoteIdAndUserIdCache, NoteObjectCache, CurrentUserCache, UserByEmailCache, UserByUsernameCache, CategoryCache, CategoryByIdAndUserIdCache, TagCache, TagByIdAndUserIdCache, MediaMetadata
     type: caffeine
     caffeine:
       spec: maximumSize = ${MAXIMUM-CACHE-SIZE:500}, expireAfterAccess=${CACHE-EXPIRE-AFTER-ACCESS:300}s #Максимальная вместимость кэша в записях; Время хранения кэша после последнего доступа в секундах
+
+grpc:
+  client:
+    note-data-modifying.address: static://${GRPC-NOTE-DATA-MODIFYING-SERVICE-HOST:localhost}:${GRPC-NOTE-DATA-MODIFYING-SERVICE-PORT:6213}
+    note-data-modifying.negotiation-type: plaintext
+    note-search.address: static://${GRPC-NOTE-SEARCH-SERVICE-HOST:localhost}:${GRPC-NOTE-SEARCH-SERVICE-PORT:6213}
+    note-search.negotiation-type: plaintext
 
 jwt:
   access-token-key: '{"kty":"oct","k":"hi7S5RX5ZRZooHA0RKGctZ-KtR9FoESgCnH-3BNg5XI"}'

@@ -3,10 +3,13 @@ package org.skyhigh.notesservice.service.tag;
 import lombok.RequiredArgsConstructor;
 import org.skyhigh.notesservice.common.Paginator;
 import org.skyhigh.notesservice.model.dto.common.SortDirection;
+import org.skyhigh.notesservice.model.dto.search.NoteTagObject;
 import org.skyhigh.notesservice.model.dto.tag.*;
 import org.skyhigh.notesservice.model.entity.Tag;
+import org.skyhigh.notesservice.repository.NoteRepository;
 import org.skyhigh.notesservice.repository.NoteTagRepository;
 import org.skyhigh.notesservice.repository.TagRepository;
+import org.skyhigh.notesservice.service.search.SearchService;
 import org.skyhigh.notesservice.service.user.UserService;
 import org.skyhigh.notesservice.validation.exception.FlkException;
 import org.skyhigh.notesservice.validation.exception.MultipleFlkException;
@@ -27,10 +30,12 @@ import java.util.Objects;
 public class TagServiceImpl implements TagService {
     private final TagCachedService tagCachedService;
     private final UserService userService;
+    private final SearchService searchService;
 
     private final TagRepository tagRepository;
 
     private final NoteTagRepository noteTagRepository;
+    private final NoteRepository noteRepository;
 
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -89,11 +94,26 @@ public class TagServiceImpl implements TagService {
                     .build()));
 
         //3. Обновить тег
+        var lastChangeDate = ZonedDateTime.now();
         tagRepository.updateTagNameAndLastChangeDateById(
                 tagId,
                 updateTagRequest.getName(),
-                ZonedDateTime.now()
+                lastChangeDate
         );
+
+        var notes = noteRepository.findByUserIdAndTagId(
+                userId,
+                tagId
+        );
+
+        if (notes != null && !notes.isEmpty())
+            notes.forEach(x -> searchService.updateNoteTagName(
+                    x.getId(),
+                    userId,
+                    tagId,
+                    updateTagRequest.getName(),
+                    lastChangeDate
+            ));
     }
 
     @Override
@@ -112,6 +132,27 @@ public class TagServiceImpl implements TagService {
 
         //2. Удалить тег
         tagRepository.deleteById(tagId);
+
+
+        var notes = noteRepository.findByUserIdAndTagId(userId, tagId);
+        if (notes != null && !notes.isEmpty())
+            notes.forEach(x -> {
+                var noteTags = tagRepository.findByNoteId(x.getId());
+                noteTags = noteTags != null && !noteTags.isEmpty()
+                        ? noteTags.stream().filter(y -> y.getId().equals(tagId)).toList()
+                        : null;
+                searchService.updateNoteTags(
+                    x.getId(),
+                    userId,
+                    noteTags == null
+                            ? null
+                            : noteTags.stream().map(y -> new NoteTagObject(
+                                    y.getId(),
+                                    y.getName()
+                            )).toList(),
+                    ZonedDateTime.now()
+                );
+            });
     }
 
     @Override

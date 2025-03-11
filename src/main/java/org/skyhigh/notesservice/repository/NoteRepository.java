@@ -52,4 +52,8 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
 
     @Query(value = "SELECT * FROM public.note n WHERE n.user_id = ?1 AND n.category_id = ?2", nativeQuery = true)
     List<Note> findByUserIdAndCategoryId(Long userId, Long categoryId);
+
+    @Query(value = "SELECT n.id, n.user_id, n.category_id, n.name, n.text_extraction, n.media_id, n.created_date, n.last_change_date " +
+            "FROM public.note n JOIN public.note_tag nt ON n.id = nt.note_id WHERE nt.tag_id = ?2 AND n.user_id = ?1", nativeQuery = true)
+    List<Note> findByUserIdAndTagId(Long userId, Long tagId);
 }

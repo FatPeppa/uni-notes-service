@@ -3,14 +3,13 @@ package org.skyhigh.notesservice.service.note;
 import org.skyhigh.notesservice.common.Paginator;
 import org.skyhigh.notesservice.model.dto.common.SortDirection;
 import org.skyhigh.notesservice.model.dto.note.*;
+import org.skyhigh.notesservice.model.dto.search.NoteTagObject;
 import org.skyhigh.notesservice.model.dto.tag.SimpleTagBody;
-import org.skyhigh.notesservice.model.entity.MediaMetadata;
-import org.skyhigh.notesservice.model.entity.MediaTypeEnum;
-import org.skyhigh.notesservice.model.entity.Note;
-import org.skyhigh.notesservice.model.entity.NoteMedia;
+import org.skyhigh.notesservice.model.entity.*;
 import org.skyhigh.notesservice.repository.*;
 import org.skyhigh.notesservice.service.resource.ResourceService;
 import org.skyhigh.notesservice.service.resource.SizeCheckableFileType;
+import org.skyhigh.notesservice.service.search.SearchService;
 import org.skyhigh.notesservice.service.user.UserService;
 import org.skyhigh.notesservice.validation.exception.FlkException;
 import org.skyhigh.notesservice.validation.exception.MultipleFlkException;
@@ -33,6 +32,7 @@ public class NotesServiceImpl implements NotesService {
     private final ResourceService resourceService;
     private final UserService userService;
     private final NotesCachedService notesCachedService;
+    private final SearchService searchService;
 
     private final NoteRepository noteRepository;
     private final MediaMetadataRepository mediaMetadataRepository;
@@ -50,6 +50,7 @@ public class NotesServiceImpl implements NotesService {
             ResourceService resourceService,
             UserService userService,
             NotesCachedService notesCachedService,
+            SearchService searchService,
             NoteRepository noteRepository,
             MediaMetadataRepository mediaMetadataRepository,
             NoteMediaRepository noteMediaRepository,
@@ -63,6 +64,7 @@ public class NotesServiceImpl implements NotesService {
         this.resourceService = resourceService;
         this.userService = userService;
         this.notesCachedService = notesCachedService;
+        this.searchService = searchService;
         this.noteRepository = noteRepository;
         this.mediaMetadataRepository = mediaMetadataRepository;
         this.noteMediaRepository = noteMediaRepository;
@@ -90,14 +92,18 @@ public class NotesServiceImpl implements NotesService {
                     .build());
 
         //2. Проверить существование категории если заполнена
+        Category category = new Category();
         if (createNoteRequest != null
-                && createNoteRequest.getCategoryId() != null
-                && categoryRepository.findByIdAndUserId(createNoteRequest.getCategoryId(), userId) == null)
-            flkExceptions.add(FlkException.builder()
-                    .flkCode(Flk10000009.getCode())
-                    .flkMessage(Flk10000009.getMessage())
-                    .flkParameterName(Flk10000009.getFieldName())
-                    .build());
+                && createNoteRequest.getCategoryId() != null) {
+            category = categoryRepository.findByIdAndUserId(createNoteRequest.getCategoryId(), userId);
+
+            if (category == null)
+                flkExceptions.add(FlkException.builder()
+                        .flkCode(Flk10000009.getCode())
+                        .flkMessage(Flk10000009.getMessage())
+                        .flkParameterName(Flk10000009.getFieldName())
+                        .build());
+        }
 
         if (!flkExceptions.isEmpty())
             throw new MultipleFlkException(flkExceptions);
@@ -115,6 +121,17 @@ public class NotesServiceImpl implements NotesService {
                 .build();
 
         note = noteRepository.save(note);
+
+        //4. Сохранить заметку в сервисе поиска заметок
+        searchService.createNote(
+                note.getId(),
+                note.getUserId(),
+                note.getName(),
+                createNoteRequest.getCategoryId(),
+                createNoteRequest.getCategoryId() != null ? category.getName() : null,
+                createdDate,
+                createdDate
+        );
 
         return CreateNoteResponse.builder()
                 .noteId(note.getId())
@@ -171,8 +188,9 @@ public class NotesServiceImpl implements NotesService {
                         .build());
 
         //4. Проверить количество фото у заметки
-        Integer noteImagesAmount = noteMediaRepository.countByNoteId(noteId);
-        if (noteImagesAmount > maxNoteImagesAmount)
+        var noteImages = noteMediaRepository.findByNoteId(noteId);
+        Integer noteImagesAmount = noteImages == null ? null : noteImages.size();
+        if (noteImagesAmount != null && noteImagesAmount > maxNoteImagesAmount)
             flkExceptions.add(FlkException.builder()
                     .flkCode(Flk10000008.getCode())
                     .flkMessage(Flk10000008.getMessage())
@@ -205,6 +223,24 @@ public class NotesServiceImpl implements NotesService {
 
         noteRepository.updateLastChangeDateById(
                 noteId,
+                lastChangeDate
+        );
+
+        //9. Обновить данные в сервисе поиска заметок
+        ArrayList<UUID> imageIds = noteImages == null
+                ? null
+                : new ArrayList<>(noteImages.stream()
+                    .map(NoteMedia::getMediaId).toList());
+        if (imageIds == null) {
+            imageIds = new ArrayList<>(List.of(mediaMetadata.getId()));
+        } else {
+            imageIds.add(mediaMetadata.getId());
+        }
+
+        searchService.updateNoteImages(
+                noteId,
+                userId,
+                imageIds,
                 lastChangeDate
         );
 
@@ -298,7 +334,17 @@ public class NotesServiceImpl implements NotesService {
                 lastChangeDate
         );
 
-        //8. Сохранить файл
+        //8. Обновить заметку в сервисе поиска заметок
+        searchService.updateNoteContent(
+                noteId,
+                userId,
+                noteTextExtraction,
+                mediaMetadata.getId(),
+                text,
+                lastChangeDate
+        );
+
+        //9. Сохранить файл
         String key = resourceService.uploadTextFile(mediaMetadata.getId().toString(), text);
 
         return UploadNoteTextResponse.builder()
@@ -486,11 +532,24 @@ public class NotesServiceImpl implements NotesService {
         if (!flkExceptions.isEmpty())
             throw new MultipleFlkException(flkExceptions);
 
+        var lastChangeDate = ZonedDateTime.now();
+
+        searchService.updateNoteNameAndCategory(
+                noteId,
+                userId,
+                updateNoteBodyRequest.getName(),
+                updateNoteBodyRequest.getCategoryId(),
+                updateNoteBodyRequest.getCategoryId() != null
+                    ? categoryRepository.findByIdAndUserId(updateNoteBodyRequest.getCategoryId(), userId).getName()
+                    : null,
+                lastChangeDate
+        );
+
         noteRepository.updateCategoryIdAndNameAndLastChangeDateById(
                 noteId,
                 updateNoteBodyRequest.getCategoryId(),
                 updateNoteBodyRequest.getName(),
-                ZonedDateTime.now()
+                lastChangeDate
         );
     }
 
@@ -563,12 +622,29 @@ public class NotesServiceImpl implements NotesService {
         //7. Удалить файл по Id
         resourceService.deleteTextFile(note.getMediaId().toString());
 
-        //8. Сохранить файл
-        String key = resourceService.uploadTextFile(note.getMediaId().toString(), text);
+        String noteTextExtraction = resourceService.parseTextFile(text, 512);
 
-        //9. Обновить дату обновления в заметке
+        //8. Обновить дату обновления в заметке
         var lastChangeDate = ZonedDateTime.now();
-        noteRepository.updateLastChangeDateById(noteId, lastChangeDate);
+        noteRepository.updateMediaIdAndTextExtractionAndLastChangeDateById(
+                noteId,
+                note.getMediaId(),
+                noteTextExtraction,
+                lastChangeDate
+        );
+
+        //9. Обновить заметку в сервисе поиска заметок
+        searchService.updateNoteContent(
+                noteId,
+                userId,
+                noteTextExtraction,
+                note.getMediaId(),
+                text,
+                lastChangeDate
+        );
+
+        //10. Сохранить файл
+        String key = resourceService.uploadTextFile(note.getMediaId().toString(), text);
 
         return UpdateNoteTextResponse.builder()
                 .mediaId(note.getMediaId())
@@ -597,8 +673,14 @@ public class NotesServiceImpl implements NotesService {
             var noteMediaList = noteMediaRepository.findByNoteId(noteId);
             noteMediaRepository.deleteByNoteId(noteId);
             for (var noteMedia : noteMediaList) {
-                resourceService.deleteImage(noteMedia.getMediaId().toString());
+                searchService.updateNoteImages(
+                        noteId,
+                        userId,
+                        null,
+                        ZonedDateTime.now()
+                );
                 mediaMetadataRepository.deleteById(noteMedia.getMediaId());
+                resourceService.deleteImage(noteMedia.getMediaId().toString());
             }
         } else if (noteMediaRepository.countByNoteId(noteId) > 0)
             throw new MultipleFlkException(List.of(FlkException.builder()
@@ -609,11 +691,12 @@ public class NotesServiceImpl implements NotesService {
 
         //3. Удалить текстовый файл заметки
         if (note.getMediaId() != null) {
-            resourceService.deleteTextFile(note.getMediaId().toString());
+            searchService.deleteNote(noteId);
             mediaMetadataRepository.deleteById(note.getMediaId());
+            resourceService.deleteTextFile(note.getMediaId().toString());
         }
 
-        //4. Удалить заметку
+        //5. Удалить заметку
         noteRepository.deleteById(noteId);
     }
 
@@ -654,12 +737,31 @@ public class NotesServiceImpl implements NotesService {
             throw new MultipleFlkException(flkExceptions);
 
         //4. Удаление фото, связки с заметкой и метаданных
-        resourceService.deleteImage(mediaId.toString());
         noteMediaRepository.deleteByNoteIdAndMediaId(noteId, mediaId);
         mediaMetadataRepository.deleteById(mediaId);
 
-        //5. Обновление даты изменения в заметке
-        noteRepository.updateLastChangeDateById(noteId, ZonedDateTime.now());
+        //5. Обновить данные в сервисе поиска заметок
+        var lastChangeDate = ZonedDateTime.now();
+        var noteImages = noteMediaRepository.findByNoteId(noteId);
+
+        List<UUID> imageIds = noteImages == null
+                ? null
+                : noteImages.stream()
+                    .map(NoteMedia::getMediaId)
+                    .filter(x -> !x.equals(mediaId)).toList();
+
+        searchService.updateNoteImages(
+                noteId,
+                userId,
+                imageIds,
+                lastChangeDate
+        );
+
+        //6. Обновление даты изменения в заметке
+        noteRepository.updateLastChangeDateById(noteId, lastChangeDate);
+
+        //7. Удаление фото заметки из S3
+        resourceService.deleteImage(mediaId.toString());
     }
 
     @Override
@@ -807,14 +909,19 @@ public class NotesServiceImpl implements NotesService {
 
         //2. Проверка существования тегов у юзера
         List<FlkException> flkExceptions = new ArrayList<>();
+        var tags = new ArrayList<Tag>();
         if (updateNoteTagsRequest.getTagIds() != null)
-            for (var tagId : updateNoteTagsRequest.getTagIds())
-                if (tagRepository.findByTagIdAndUserId(tagId, userId) == null)
+            for (var tagId : updateNoteTagsRequest.getTagIds()) {
+                var tag = tagRepository.findByTagIdAndUserId(tagId, userId);
+                if (tag == null)
                     flkExceptions.add(FlkException.builder()
                             .flkCode(Flk10000017.getCode())
                             .flkMessage(Flk10000017.getMessage())
                             .flkParameterName(Flk10000017.getFieldName())
                             .build());
+                else
+                    tags.add(tag);
+            }
 
         if (!flkExceptions.isEmpty())
             throw new MultipleFlkException(flkExceptions);
@@ -825,8 +932,18 @@ public class NotesServiceImpl implements NotesService {
         if (updateNoteTagsRequest.getTagIds() != null && !updateNoteTagsRequest.getTagIds().isEmpty())
             updateNoteTagsRequest.getTagIds().forEach(x -> noteTagRepository.saveEntity(x, noteId, ZonedDateTime.now()));
 
+        //4. Обновить теги в сервисе поиска заметок
+        var lastChangeDate = ZonedDateTime.now();
+        searchService.updateNoteTags(
+                noteId,
+                userId,
+                tags.stream().map(x -> NoteTagObject.builder()
+                        .tagId(x.getId()).tagName(x.getName()).build()).toList(),
+                lastChangeDate
+        );
+
         //4. Обновить дату обновления в заметке
-        noteRepository.updateLastChangeDateById(noteId, ZonedDateTime.now());
+        noteRepository.updateLastChangeDateById(noteId, lastChangeDate);
     }
 
     @Override
@@ -845,15 +962,38 @@ public class NotesServiceImpl implements NotesService {
                     .build()));
 
         //2. Проверить существование целевой категории у юзера если она заполнена
-        if (updateNoteCategoryRequest.getCategoryId() != null
-                && categoryRepository.findByIdAndUserId(updateNoteCategoryRequest.getCategoryId(), userId) == null)
-            throw new MultipleFlkException(List.of(FlkException.builder()
-                    .flkCode(Flk10000009.getCode())
-                    .flkMessage(Flk10000009.getMessage())
-                    .flkParameterName(Flk10000009.getFieldName())
-                    .build()));
+        Category category = new Category();
+        if (updateNoteCategoryRequest.getCategoryId() != null) {
+            category = categoryRepository.findByIdAndUserId(updateNoteCategoryRequest.getCategoryId(), userId);
+            if (category == null)
+                throw new MultipleFlkException(List.of(FlkException.builder()
+                        .flkCode(Flk10000009.getCode())
+                        .flkMessage(Flk10000009.getMessage())
+                        .flkParameterName(Flk10000009.getFieldName())
+                        .build()));
+        }
 
         //3. Обновить категорию заметки
-        noteRepository.updateCategoryIdAndLastChangeDateById(noteId, updateNoteCategoryRequest.getCategoryId(), ZonedDateTime.now());
+        var lastChangeDate = ZonedDateTime.now();
+        if (updateNoteCategoryRequest.getCategoryId() != null)
+            searchService.updateNoteCategoryName(
+                    noteId,
+                    userId,
+                    updateNoteCategoryRequest.getCategoryId(),
+                    category.getName(),
+                    lastChangeDate
+            );
+        else {
+            searchService.updateNoteNameAndCategory(
+                    noteId,
+                    userId,
+                    note.getName(),
+                    null,
+                    null,
+                    lastChangeDate
+            );
+        }
+
+        noteRepository.updateCategoryIdAndLastChangeDateById(noteId, updateNoteCategoryRequest.getCategoryId(), lastChangeDate);
     }
 }
