@@ -73,6 +73,7 @@ s3:
   region-name: ${S3-REGION-NAME:ru-msk} #Базовый регион S3
 
 resources:
+  max-note-tag-ids-filter-for-search-amount: ${MAX-NOTE-TAG-IDS-FILTER-FOR-SEARCH-AMOUNT:10}
   max-users-categories-amount: ${MAX-NOTES-CATEGORIES-AMOUNT:25} #Максимальное количество категорий для пользователя
   max-note-image-file-size: ${MAX-NOTE-IMAGE-FILE-SIZE:15} #Максимальный размер фото к заметке в Мб
   max-note-text-file-size: ${MAX-NOTE-TEXT-FILE-SIZE:1} #Максимальный размер текстового файла заметки в Мб

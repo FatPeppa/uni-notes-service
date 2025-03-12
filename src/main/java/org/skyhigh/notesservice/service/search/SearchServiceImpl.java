@@ -1,7 +1,6 @@
 package org.skyhigh.notesservice.service.search;
 
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.shyhigh.grpc.notes.NoteDataUpdateType;
 import org.shyhigh.grpc.notes.ResponseResultCode;
@@ -15,6 +14,7 @@ import org.skyhigh.notesservice.repository.NoteTagRepository;
 import org.skyhigh.notesservice.service.user.UserService;
 import org.skyhigh.notesservice.validation.exception.*;
 import org.skyhigh.notesservice.validation.flk.Flk10000024;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,12 +23,25 @@ import java.time.ZonedDateTime;
 import java.util.*;
 
 @Service
-@RequiredArgsConstructor
 @Log4j2
 public class SearchServiceImpl implements SearchService {
     private final NoteSearchRepository noteSearchRepository;
     private final UserService userService;
     private final NoteTagRepository noteTagRepository;
+
+    private final Integer maxNoteTagIdsFilterForSearchAmount;
+
+    public SearchServiceImpl(
+            NoteSearchRepository noteSearchRepository,
+            UserService userService,
+            NoteTagRepository noteTagRepository,
+            @Qualifier("MaxNoteTagIdsFilterForSearchAmount") Integer maxNoteTagIdsFilterForSearchAmount
+    ) {
+        this.noteSearchRepository = noteSearchRepository;
+        this.userService = userService;
+        this.noteTagRepository = noteTagRepository;
+        this.maxNoteTagIdsFilterForSearchAmount = maxNoteTagIdsFilterForSearchAmount;
+    }
 
     @Override
     public void createNote(
@@ -307,7 +320,7 @@ public class SearchServiceImpl implements SearchService {
                     .notes(List.of())
                     .build();
 
-        if (tagIds != null && !tagIds.isEmpty() && tagIds.size() > 10)
+        if (tagIds != null && !tagIds.isEmpty() && tagIds.size() > maxNoteTagIdsFilterForSearchAmount)
             throw new MultipleFlkException(List.of(FlkException.builder()
                     .flkCode(Flk10000024.getCode())
                     .flkMessage(Flk10000024.getMessage())

@@ -43,8 +43,8 @@ public class NotesServiceImpl implements NotesService {
     private final NoteTagRepository noteTagRepository;
     private final TagRepository tagRepository;
 
-
     private final Integer maxNoteImagesAmount;
+    private final Integer maxNoteTagIdsFilterForSearchAmount;
 
     public NotesServiceImpl(
             ResourceService resourceService,
@@ -59,7 +59,8 @@ public class NotesServiceImpl implements NotesService {
             UserPropertiesRepository userPropertiesRepository,
             NoteTagRepository noteTagRepository,
             TagRepository tagRepository,
-            @Qualifier("MaxNoteImagesAmount") Integer maxNoteImagesAmount
+            @Qualifier("MaxNoteImagesAmount") Integer maxNoteImagesAmount,
+            @Qualifier("MaxNoteTagIdsFilterForSearchAmount") Integer maxNoteTagIdsFilterForSearchAmount
     ) {
         this.resourceService = resourceService;
         this.userService = userService;
@@ -74,6 +75,7 @@ public class NotesServiceImpl implements NotesService {
         this.noteTagRepository = noteTagRepository;
         this.tagRepository = tagRepository;
         this.maxNoteImagesAmount = maxNoteImagesAmount;
+        this.maxNoteTagIdsFilterForSearchAmount = maxNoteTagIdsFilterForSearchAmount;
     }
 
     @Override
@@ -378,7 +380,7 @@ public class NotesServiceImpl implements NotesService {
                     .notes(new ArrayList<>())
                     .build();
 
-        if (tagIds != null && !tagIds.isEmpty() && tagIds.size() > 10)
+        if (tagIds != null && !tagIds.isEmpty() && tagIds.size() > maxNoteTagIdsFilterForSearchAmount)
             throw new MultipleFlkException(List.of(FlkException.builder()
                     .flkCode(Flk10000024.getCode())
                     .flkMessage(Flk10000024.getMessage())

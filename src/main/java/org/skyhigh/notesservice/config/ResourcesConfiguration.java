@@ -18,6 +18,9 @@ public class ResourcesConfiguration {
     @Value("${resources.max-users-categories-amount}")
     private Integer maxUsersCategoriesAmount;
 
+    @Value("${resources.max-note-tag-ids-filter-for-search-amount}")
+    private Integer maxNoteTagIdsFilterForSearchAmount;
+
     @Bean("MaxNoteImageFileSize")
     public Integer getMaxNoteImageFileSize() {
         return maxNoteImageFileSize;
@@ -37,6 +40,9 @@ public class ResourcesConfiguration {
     public Integer getMaxUsersCategoriesAmount() {
         return maxUsersCategoriesAmount;
     }
+
+    @Bean("MaxNoteTagIdsFilterForSearchAmount")
+    public Integer getMaxNoteTagIdsFilterForSearchAmount() {return maxNoteTagIdsFilterForSearchAmount;}
 }
 
 
