@@ -11,6 +11,7 @@ import org.skyhigh.notesservice.model.dto.note.NoteSearchResponseDetailType;
 import org.skyhigh.notesservice.model.dto.note.NoteSearchType;
 import org.skyhigh.notesservice.model.dto.search.*;
 import org.skyhigh.notesservice.repository.NoteSearchRepository;
+import org.skyhigh.notesservice.repository.NoteTagRepository;
 import org.skyhigh.notesservice.service.user.UserService;
 import org.skyhigh.notesservice.validation.exception.GrpcResponseException;
 import org.skyhigh.notesservice.validation.exception.InternalServerErrorException;
@@ -20,10 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +29,7 @@ import java.util.UUID;
 public class SearchServiceImpl implements SearchService {
     private final NoteSearchRepository noteSearchRepository;
     private final UserService userService;
+    private final NoteTagRepository noteTagRepository;
 
     @Override
     public void createNote(
@@ -238,7 +237,7 @@ public class SearchServiceImpl implements SearchService {
             @NonNull MultipartFile content,
             @NonNull ZonedDateTime lastChangeDate
     ) throws RequestException {
-        NoteUpdateRequestObject request = null;
+        NoteUpdateRequestObject request;
         try {
             request = NoteUpdateRequestObject.builder()
                     .noteDataUpdateType(NoteDataUpdateType.NOTE_CONTENT_UPDATE)
@@ -291,6 +290,8 @@ public class SearchServiceImpl implements SearchService {
             String query,
             NoteSearchType searchType,
             NoteSearchResponseDetailType detailType,
+            Long categoryId,
+            List<Long> tagIds,
             ZonedDateTime beginDate,
             ZonedDateTime endDate,
             SortDirection createdDateSortDirection,
@@ -345,6 +346,25 @@ public class SearchServiceImpl implements SearchService {
                         .build();
 
             noteObjects = noteObjects.stream()
+                    .filter(x -> {
+                        if (categoryId != null) return
+                            x.getNoteCategoryObject() == null
+                                    ? null
+                                    : x.getNoteCategoryObject().getCategoryId()
+                                        .equals(categoryId);
+                        else return true;
+                    })
+                    .filter(x -> {
+                        if (tagIds != null && !tagIds.isEmpty()) {
+                            if (x.getNoteTagObjects() != null)
+                                return new HashSet<>(x.getNoteTagObjects().stream()
+                                        .map(NoteTagObject::getTagId).toList()).containsAll(tagIds);
+                            else
+                                return tagIds.stream().allMatch(y -> noteTagRepository
+                                        .findByNoteIdAndTagId(x.getNoteId(), y) != null);
+                        }
+                        else return true;
+                    })
                     .filter(x -> {if (beginDate != null) return x.getCreatedDate().isAfter(beginDate) || x.getCreatedDate().isEqual(beginDate); else return true;})
                     .filter(x -> {if (endDate != null) return x.getCreatedDate().isBefore(endDate) || x.getCreatedDate().isEqual(endDate); else return true;})
                     .toList();
@@ -352,7 +372,7 @@ public class SearchServiceImpl implements SearchService {
             if (createdDateSortDirection == SortDirection.ASC)
                 noteObjects = noteObjects.stream().sorted().toList();
             if (createdDateSortDirection == SortDirection.DESC) {
-                var noteObjectsArrayList = new ArrayList<NoteObject>(noteObjects);
+                var noteObjectsArrayList = new ArrayList<>(noteObjects);
                 noteObjectsArrayList.sort(Comparator.reverseOrder());
                 noteObjects = noteObjectsArrayList;
             }

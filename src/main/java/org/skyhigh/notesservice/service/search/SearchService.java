@@ -80,6 +80,8 @@ public interface SearchService {
             String query,
             NoteSearchType searchType,
             NoteSearchResponseDetailType detailType,
+            Long categoryId,
+            List<Long> tagIds,
             ZonedDateTime beginDate,
             ZonedDateTime endDate,
             SortDirection createdDateSortDirection,

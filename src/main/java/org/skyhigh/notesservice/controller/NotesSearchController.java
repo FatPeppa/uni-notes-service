@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("/search/v1/notes")
@@ -30,6 +31,8 @@ public class NotesSearchController {
             @RequestParam(required = false, defaultValue = "") @Parameter(description = "Текстовый запрос (строка, введенная пользователем для поиска)") String query,
             @RequestParam(required = false, defaultValue = "NORMALIZED_FULL_TEXT") @Parameter(description = "Тип поиска заметок") NoteSearchType searchType,
             @RequestParam(required = false, defaultValue = "FULL") @Parameter(description = "Тип детализации поиска заметок") NoteSearchResponseDetailType detailType,
+            @RequestParam(required = false) @Parameter(description = "ID категории заметки") Long categoryId,
+            @RequestParam(required = false) @Parameter(description = "ID тегов заметки") List<Long> tagIds,
             @RequestParam(required = false) @Parameter(description = "Дата и время начала диапазона поиска") ZonedDateTime beginDate,
             @RequestParam(required = false) @Parameter(description = "Дата и время окончания диапазона поиска") ZonedDateTime endDate,
             @RequestParam(required = false) @Parameter(description = "Направление сортировки по дате создания") SortDirection createdDateSortDirection,
@@ -40,6 +43,8 @@ public class NotesSearchController {
                 query,
                 searchType,
                 detailType,
+                categoryId,
+                tagIds,
                 beginDate,
                 endDate,
                 createdDateSortDirection,
