@@ -3,15 +3,15 @@ server:
   http2:
     enabled: true
   undertow:
-    max-http-post-size: ${SERVER-MAX-HTTP-POST-SIZE:15MB}
+    max-http-post-size: ${SERVER-MAX-HTTP-POST-SIZE:15MB} #Максимальный объем тела запроса, поддерживаемый веб-сервером
 
 spring:
   application:
     name: notes-service
   servlet:
     multipart:
-      max-file-size: ${MAX-SERVLET-MULTIPART-FILE-SIZE:15MB}
-      max-request-size: ${MAX-SERVLET-MULTIPART-REQUEST-SIZE:15MB}
+      max-file-size: ${MAX-SERVLET-MULTIPART-FILE-SIZE:15MB} #Максимальный объем Multipart файла
+      max-request-size: ${MAX-SERVLET-MULTIPART-REQUEST-SIZE:15MB} #Максимальный объем запроса, содержащего Multipart
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
