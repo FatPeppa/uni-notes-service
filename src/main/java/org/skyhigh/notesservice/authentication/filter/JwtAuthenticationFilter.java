@@ -52,9 +52,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         var jwt = authHeader.substring(BEARER_PREFIX.length());
 
         var token = jwtService.extractAccessOrRefreshToken(jwt);
-        if (token == null)  {
+        if (token == null)
             throw new TokenAuthenticationException("Некорректный/отсутствует access токен");
-        }
 
         var username = token.subject();
 

@@ -75,4 +75,58 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .refreshTokenExpiry(jwtService.extractRefreshTokenExpiration(refreshToken).toString())
                 .build();
     }
+
+    @Override
+    public AuthenticationResponse signInAdmin(SignInRequest request) {
+        var username = request.getUsername();
+
+        if (username == null || username.isEmpty()) {
+            var user = userService.getUnblockedByEmail(request.getEmail());
+            username = user.getUsername();
+        }
+
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                username,
+                request.getPassword()
+        ));
+
+        var user = userService.userDetailsService()
+                .loadUserByUsername(username);
+
+        var accessToken = jwtService.generateAccessToken(user);
+        var refreshToken = jwtService.generateRefreshToken(user);
+
+        userService.updateLastLogonDateByUsername(username, ZonedDateTime.now());
+
+        return AuthenticationResponse.builder()
+                .accessToken(accessToken)
+                .accessTokenExpiry(jwtService.extractAccessTokenExpiration(accessToken).toString())
+                .refreshToken(refreshToken)
+                .refreshTokenExpiry(jwtService.extractRefreshTokenExpiration(refreshToken).toString())
+                .build();
+    }
+
+    @Override
+    public AuthenticationResponse signUpAdmin(SignUpRequest request) {
+        var user = User.builder()
+                .username(request.getUsername())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(Role.ROLE_ADMIN)
+                .registerDate(ZonedDateTime.now())
+                .lastLogonDate(ZonedDateTime.now())
+                .blocked(false)
+                .build();
+
+        userService.create(user);
+
+        var accessToken = jwtService.generateAccessToken(user);
+        var refreshToken = jwtService.generateRefreshToken(user);
+        return AuthenticationResponse.builder()
+                .accessToken(accessToken)
+                .accessTokenExpiry(jwtService.extractAccessTokenExpiration(accessToken).toString())
+                .refreshToken(refreshToken)
+                .refreshTokenExpiry(jwtService.extractRefreshTokenExpiration(refreshToken).toString())
+                .build();
+    }
 }

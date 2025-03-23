@@ -7,4 +7,6 @@ import org.skyhigh.notesservice.model.dto.authentication.SignUpRequest;
 public interface AuthenticationService {
     AuthenticationResponse signUp(SignUpRequest request);
     AuthenticationResponse signIn(SignInRequest request);
+    AuthenticationResponse signInAdmin(SignInRequest request);
+    AuthenticationResponse signUpAdmin(SignUpRequest request);
 }

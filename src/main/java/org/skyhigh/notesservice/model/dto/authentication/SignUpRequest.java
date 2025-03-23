@@ -1,6 +1,7 @@
 package org.skyhigh.notesservice.model.dto.authentication;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import lombok.Data;
 import org.skyhigh.notesservice.validation.annotation.Email;
 import org.skyhigh.notesservice.validation.annotation.NotEmpty;
@@ -8,6 +9,7 @@ import org.skyhigh.notesservice.validation.annotation.Size;
 
 @Data
 @Schema(name = "Запрос на регистрацию", description = "Тело запроса на регистрацию")
+@Builder
 public class SignUpRequest {
 
     @Schema(description = "Имя пользователя. От 5 до 30 символов", example = "TestUser1")

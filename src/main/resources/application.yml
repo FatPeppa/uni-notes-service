@@ -60,6 +60,9 @@ grpc:
     note-data-modifying.negotiation-type: plaintext
     note-search.address: static://${GRPC-NOTE-SEARCH-SERVICE-HOST:localhost}:${GRPC-NOTE-SEARCH-SERVICE-PORT:6213}
     note-search.negotiation-type: plaintext
+  server:
+    port: ${GRPC-SERVER-PORT:6216}
+    max-inbound-message-size: ${MAX-INBOUND-MESSAGE-SIZE:2MB}
 
 jwt:
   access-token-key: '{"kty":"oct","k":"hi7S5RX5ZRZooHA0RKGctZ-KtR9FoESgCnH-3BNg5XI"}'

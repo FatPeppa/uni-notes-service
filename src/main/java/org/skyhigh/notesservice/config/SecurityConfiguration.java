@@ -1,6 +1,8 @@
 package org.skyhigh.notesservice.config;
 
 import lombok.RequiredArgsConstructor;
+import net.devh.boot.grpc.server.security.authentication.BasicGrpcAuthenticationReader;
+import net.devh.boot.grpc.server.security.authentication.GrpcAuthenticationReader;
 import org.skyhigh.notesservice.authentication.exception.TokenAuthenticationEntryPoint;
 import org.skyhigh.notesservice.authentication.filter.JwtAuthenticationFilter;
 import org.skyhigh.notesservice.authentication.filter.JwtLogoutFilter;
@@ -40,9 +42,6 @@ public class SecurityConfiguration {
     private final RefreshTokenFilter refreshTokenFilter;
     private final UserService userService;
     private final DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-
-    /*@Getter
-    private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();*/
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
@@ -94,5 +93,10 @@ public class SecurityConfiguration {
     @Bean
     public AuthenticationEntryPoint authenticationEntryPoint(){
         return new TokenAuthenticationEntryPoint();
+    }
+
+    @Bean
+    public GrpcAuthenticationReader grpcAuthenticationReader(){
+        return new BasicGrpcAuthenticationReader();
     }
 }
