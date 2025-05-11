@@ -24,10 +24,13 @@ public class DefaultAccessTokenFactory implements AccessTokenFactory {
     @Override
     public Token apply(Token token) {
         var now = Instant.now();
+
         return new Token(token.id(), token.subject(),
                 token.authorities().stream()
-                        .filter(authority -> authority.startsWith("GRANT_"))
-                        .map(authority -> authority.substring(6))
+                        .filter(authority -> authority.startsWith("GRANT_") || authority.startsWith("ROLE_"))
+                        .map(authority -> authority.startsWith("GRANT_")
+                                ? authority.substring(6)
+                                : authority)
                         .toList(), now, now.plus(this.tokenTtl));
     }
 }

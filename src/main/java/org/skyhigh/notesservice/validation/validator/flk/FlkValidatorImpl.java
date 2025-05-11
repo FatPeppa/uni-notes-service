@@ -19,7 +19,8 @@ public class FlkValidatorImpl implements FlkValidator {
 
         currentMethodActiveFlk.forEach(activeFlkName -> {
             try {
-                Class<?> clazz = Class.forName("org.skyhigh.notesservice.validation.flk." + activeFlkName);
+                Class<?> clazz = Class.forName("org.skyhigh.notesservice.validation.flk.flk"
+                        + activeFlkName.substring(3, 7) + "." + activeFlkName);
                 Method validationMethod = clazz.getMethod(
                         "validate",
                         Object.class,

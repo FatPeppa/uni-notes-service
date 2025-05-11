@@ -8,6 +8,10 @@ server:
 spring:
   application:
     name: notes-service
+    admin:
+      admin-block-option-on: ${ADMIN-BLOCK-OPTION-ON:true}
+    client:
+      using-default-client-id: ${USING-DEFAULT-CLIENT-ID:true}
   servlet:
     multipart:
       max-file-size: ${MAX-SERVLET-MULTIPART-FILE-SIZE:15MB} #Максимальный объем Multipart файла
@@ -58,11 +62,15 @@ grpc:
   client:
     note-data-modifying.address: static://${GRPC-NOTE-DATA-MODIFYING-SERVICE-HOST:localhost}:${GRPC-NOTE-DATA-MODIFYING-SERVICE-PORT:6213}
     note-data-modifying.negotiation-type: plaintext
-    note-search.address: static://${GRPC-NOTE-SEARCH-SERVICE-HOST:localhost}:${GRPC-NOTE-SEARCH-SERVICE-PORT:6213}
+    note-search.address: static://${GRPC-NOTE-SEARCH-SERVICE-HOST:localhost}:${GRPC-NOTE-SEARCH-SERVICE-PORT:6214}
     note-search.negotiation-type: plaintext
+    grpc-api-token-service.address: static://${GRPC-API-TOKEN-SERVICE-HOST:localhost}:${GRPC-API-TOKEN-SERVICE-PORT:6214}
+    grpc-api-token-service.negotiation-type: plaintext
   server:
     port: ${GRPC-SERVER-PORT:6216}
     max-inbound-message-size: ${MAX-INBOUND-MESSAGE-SIZE:2MB}
+    security:
+      enabled: false
 
 jwt:
   access-token-key: '{"kty":"oct","k":"hi7S5RX5ZRZooHA0RKGctZ-KtR9FoESgCnH-3BNg5XI"}'
@@ -82,10 +90,11 @@ resources:
   max-note-text-file-size: ${MAX-NOTE-TEXT-FILE-SIZE:1} #Максимальный размер текстового файла заметки в Мб
   max-note-images-amount: ${MAX-NOTE-IMAGES-AMOUNT:5} #Максимальное количество приложенных к заметке фото
 
+
 logging:
   level:
-    org.springframework.security.web: TRACE
-    root: ${DEFAULT-LOGGING-LEVEL:INFO} #Уровень логирования сервиса. Возможные значения: ERROR / WARN / INFO / DEBUG / TRACE
+    org.springframework.security.web: DEBUG
+    root: ${DEFAULT-LOGGING-LEVEL:DEBUG} #Уровень логирования сервиса. Возможные значения: ERROR / WARN / INFO / DEBUG / TRACE
 
 debug:
   ${DEBUG:false} #Переключатель режима отладки сервиса. Возможные значения: true (режим отладки) / false (обычный режим)

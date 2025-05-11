@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -47,6 +48,9 @@ public class User implements UserDetails {
 
     @Column(name = "blocked", nullable = false)
     private boolean blocked;
+
+    @Column(name = "client_id", nullable = false)
+    private UUID clientId;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

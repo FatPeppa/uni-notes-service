@@ -7,7 +7,10 @@ import org.skyhigh.notesservice.authentication.exception.TokenAuthenticationEntr
 import org.skyhigh.notesservice.authentication.filter.JwtAuthenticationFilter;
 import org.skyhigh.notesservice.authentication.filter.JwtLogoutFilter;
 import org.skyhigh.notesservice.authentication.filter.RefreshTokenFilter;
+import org.skyhigh.notesservice.service.authentication.GrpcApiTokenService;
 import org.skyhigh.notesservice.service.user.UserService;
+import org.skyhigh.notesservice.validation.exception.GrpcResponseException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +31,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
@@ -42,6 +46,12 @@ public class SecurityConfiguration {
     private final RefreshTokenFilter refreshTokenFilter;
     private final UserService userService;
     private final DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+    private final GrpcApiTokenService grpcApiTokenService;
+    private final String defaultUserAppClientName = "SkyHighNotesOriginalMobileAppApi";
+    private final String defaultAdminAppClientName = "SkyHighNotesAdministratorApi";
+
+    @Value("${spring.application.client.using-default-client-id}")
+    private boolean usingDefaultClientIdOn;
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
@@ -98,5 +108,26 @@ public class SecurityConfiguration {
     @Bean
     public GrpcAuthenticationReader grpcAuthenticationReader(){
         return new BasicGrpcAuthenticationReader();
+    }
+
+    @Bean("UsingDefaultClientIdOn")
+    public boolean usingDefaultClientIdOn() {return this.usingDefaultClientIdOn;}
+
+    @Bean("DefaultUserClientId")
+    public UUID defaultUserClientId() {
+        try {
+            return UUID.fromString(grpcApiTokenService.getAppClient(this.defaultUserAppClientName).getId());
+        } catch (GrpcResponseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Bean("DefaultAdminClientId")
+    public UUID defaultAdminClientId() {
+        try {
+            return UUID.fromString(grpcApiTokenService.getAppClient(this.defaultAdminAppClientName).getId());
+        } catch (GrpcResponseException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

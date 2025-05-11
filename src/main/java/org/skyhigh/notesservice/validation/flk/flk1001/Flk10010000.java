@@ -1,14 +1,15 @@
-package org.skyhigh.notesservice.validation.flk;
+package org.skyhigh.notesservice.validation.flk.flk1001;
 
 import lombok.Getter;
 import org.skyhigh.notesservice.validation.exception.FlkException;
+import org.skyhigh.notesservice.validation.flk.CommonFlk;
 
-public class Flk10000017 extends CommonFlk {
-    @Getter private static final String code = "10000017";
-    @Getter private static final String message = "Тег не существует или не принадлежит пользователю";
+public class Flk10010000 extends CommonFlk {
+    @Getter private static final String code = "10010000";
+    @Getter private static final String message = "Пользователь по указанному ID не существует";
     @Getter private static final String fieldName = null;
 
-    public Flk10000017() {
+    public Flk10010000() {
         super(
                 null,
                 null,

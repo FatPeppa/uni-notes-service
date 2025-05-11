@@ -13,7 +13,7 @@ import org.skyhigh.notesservice.service.search.SearchService;
 import org.skyhigh.notesservice.service.user.UserService;
 import org.skyhigh.notesservice.validation.exception.FlkException;
 import org.skyhigh.notesservice.validation.exception.MultipleFlkException;
-import org.skyhigh.notesservice.validation.flk.*;
+import org.skyhigh.notesservice.validation.flk.flk1000.*;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;

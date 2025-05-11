@@ -7,6 +7,9 @@ package notes;
 option java_package = "org.shyhigh.grpc.notes";
 option java_multiple_files = true;
 
+//TO DO: Рефакторинг кода в части замены кодов неуспешного выполнения запросов на код общей ошибки
+//    без детализации по запросам.
+// Детальное описание ошибки с её кодом добавить в тело ответа
 enum ResponseResultCode {
   CREATE_SUCCESS = 0;
   CREATE_FAILURE_UNREADABLE_MESSAGE = 1;
@@ -47,7 +50,11 @@ enum ResponseResultCode {
   BLOCK_USER_FAILURE_USER_ALREADY_BLOCKED = 36;
   BLOCK_USER_FAILURE_USER_CANNOT_BLOCK_SELF = 37;
   BLOCK_USER_FAILURE_USER_CANNOT_BLOCK_ADMIN = 38;
-  UNAUTHORIZED_REQUEST = 39;
+  GET_USER_BY_USER_NAME_SUCCESS = 39;
+  GET_USER_BY_USER_NAME_FAILURE = 40;
+  UNAUTHORIZED_REQUEST = 41;
+  GET_APP_CLIENT_SUCCESS = 42;
+  GET_APP_CLIENT_FAILURE = 43;
 }
 
 // Notes
@@ -172,8 +179,27 @@ message ApiTokenValidationResult {
   string responseDate = 2;
 }
 
+message GetAppClientRequest {
+  string client_name = 1;
+}
+
+message GetAppClientResponse {
+  AppClient app_client = 1;
+  ResponseResultCode response_result_code = 2;
+}
+
+message AppClient {
+  string id = 1;
+  string name = 2;
+  string client_type_code = 3;
+  string target_usage = 4;
+  string register_date = 5;
+  int64 user_id = 6;
+}
+
 service ApiTokenService {
   rpc validateApiToken(ApiTokenValidationRequest) returns (ApiTokenValidationResult);
+  rpc getAppClient(GetAppClientRequest) returns (GetAppClientResponse);
 }
 
 // Authentication
@@ -220,9 +246,10 @@ message ValidateTokenRequest {
 }
 
 message UserDetails {
-  repeated google.protobuf.StringValue granted_authority = 1;
+  int64 user_id = 1;
+  repeated google.protobuf.StringValue granted_authority = 2;
   //string password = 2;
-  string username = 2;
+  string username = 3;
 }
 
 message ValidateTokenResponse {
@@ -278,7 +305,8 @@ message SearchUsersRequest {
   google.protobuf.StringValue end_date = 7;
   SearchUsersDateFilterType date_filter_type = 8;
   SearchUsersDetailType detail_type = 9;
-  string access_token = 10;
+  google.protobuf.StringValue email = 10;
+  string access_token = 11;
 }
 
 message SearchUsersResponse {
@@ -295,7 +323,17 @@ message BlockUserResponse {
   ResponseResultCode response_result_code = 1;
 }
 
+message GetUserDetailsByUsernameRequest {
+  string username = 1;
+}
+
+message GetUserDetailsByUsernameResponse {
+  ResponseResultCode response_result_code = 1;
+  UserDetails user_details = 2;
+}
+
 service GrpcUserService {
   rpc searchUsers(SearchUsersRequest) returns (SearchUsersResponse);
   rpc blockUser(BlockUserRequest) returns (BlockUserResponse);
+  rpc getUserDetailsByUsername(GetUserDetailsByUsernameRequest) returns (GetUserDetailsByUsernameResponse);
 }

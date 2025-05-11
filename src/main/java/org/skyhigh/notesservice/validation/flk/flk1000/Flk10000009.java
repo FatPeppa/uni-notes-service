@@ -1,7 +1,8 @@
-package org.skyhigh.notesservice.validation.flk;
+package org.skyhigh.notesservice.validation.flk.flk1000;
 
 import lombok.Getter;
 import org.skyhigh.notesservice.validation.exception.FlkException;
+import org.skyhigh.notesservice.validation.flk.CommonFlk;
 
 public class Flk10000009 extends CommonFlk {
     @Getter private static final String code = "10000009";

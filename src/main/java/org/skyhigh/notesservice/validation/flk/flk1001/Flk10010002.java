@@ -1,14 +1,16 @@
-package org.skyhigh.notesservice.validation.flk;
+package org.skyhigh.notesservice.validation.flk.flk1001;
 
 import lombok.Getter;
 import org.skyhigh.notesservice.validation.exception.FlkException;
+import org.skyhigh.notesservice.validation.flk.CommonFlk;
 
-public class Flk10000010 extends CommonFlk {
-    @Getter private static final String code = "10000010";
-    @Getter private static final String message = "Основным файлом заметки может быть только TXT файл";
+public class Flk10010002 extends CommonFlk {
+    @Getter
+    private static final String code = "10010002";
+    @Getter private static final String message = "Блокировка собственного аккаунта запрещена";
     @Getter private static final String fieldName = null;
 
-    public Flk10000010() {
+    public Flk10010002() {
         super(
                 null,
                 null,

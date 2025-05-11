@@ -1,14 +1,15 @@
-package org.skyhigh.notesservice.validation.flk;
+package org.skyhigh.notesservice.validation.flk.flk1000;
 
 import lombok.Getter;
 import org.skyhigh.notesservice.validation.exception.FlkException;
+import org.skyhigh.notesservice.validation.flk.CommonFlk;
 
-public class Flk10000012 extends CommonFlk {
-    @Getter private static final String code = "10000012";
-    @Getter private static final String message = "К заметке уже привязан текстовый файл";
+public class Flk10000018 extends CommonFlk {
+    @Getter private static final String code = "10000018";
+    @Getter private static final String message = "Категория с указанным именем уже существует";
     @Getter private static final String fieldName = null;
 
-    public Flk10000012() {
+    public Flk10000018() {
         super(
                 null,
                 null,

@@ -1,14 +1,15 @@
-package org.skyhigh.notesservice.validation.flk;
+package org.skyhigh.notesservice.validation.flk.flk1000;
 
 import lombok.Getter;
 import org.skyhigh.notesservice.validation.exception.FlkException;
+import org.skyhigh.notesservice.validation.flk.CommonFlk;
 
-public class Flk10000013 extends CommonFlk {
-    @Getter private static final String code = "10000013";
-    @Getter private static final String message = "Заметки не найдены";
+public class Flk10000020 extends CommonFlk {
+    @Getter private static final String code = "10000020";
+    @Getter private static final String message = "У пользователя слишком много категорий";
     @Getter private static final String fieldName = null;
 
-    public Flk10000013() {
+    public Flk10000020() {
         super(
                 null,
                 null,

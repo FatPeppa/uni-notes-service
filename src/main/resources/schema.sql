@@ -90,6 +90,7 @@ CREATE TABLE IF NOT EXISTS public.users
     register_date timestamp with time zone NOT NULL,
     last_logon_date timestamp with time zone NOT NULL,
     blocked boolean DEFAULT FALSE NOT NULL,
+    client_id uuid NOT NULL,
     CONSTRAINT pk_users PRIMARY KEY (id)
 );
 

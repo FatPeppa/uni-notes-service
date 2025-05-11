@@ -28,4 +28,7 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
     @Modifying(clearAutomatically=true, flushAutomatically=true)
     @Query(value = "UPDATE public.tag SET name = ?2, last_change_date = ?3 WHERE id = ?1", nativeQuery = true)
     void updateTagNameAndLastChangeDateById(Long tagId, String name, ZonedDateTime lastChangeDate);
+
+    @Query(value = "SELECT count(*) FROM public.tag t WHERE t.user_id = ?1", nativeQuery = true)
+    Integer getUsersTagsAmount(Long userId);
 }

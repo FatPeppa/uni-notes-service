@@ -1,8 +1,9 @@
-package org.skyhigh.notesservice.validation.flk;
+package org.skyhigh.notesservice.validation.flk.flk1000;
 
 import lombok.Getter;
 import org.skyhigh.notesservice.model.dto.authentication.SignUpRequest;
 import org.skyhigh.notesservice.validation.exception.FlkException;
+import org.skyhigh.notesservice.validation.flk.CommonFlk;
 
 
 /**

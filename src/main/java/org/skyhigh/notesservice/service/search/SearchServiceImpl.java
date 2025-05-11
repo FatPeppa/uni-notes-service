@@ -13,7 +13,7 @@ import org.skyhigh.notesservice.repository.NoteSearchRepository;
 import org.skyhigh.notesservice.repository.NoteTagRepository;
 import org.skyhigh.notesservice.service.user.UserService;
 import org.skyhigh.notesservice.validation.exception.*;
-import org.skyhigh.notesservice.validation.flk.Flk10000024;
+import org.skyhigh.notesservice.validation.flk.flk1000.Flk10000024;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

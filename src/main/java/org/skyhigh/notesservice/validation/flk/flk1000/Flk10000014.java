@@ -1,14 +1,15 @@
-package org.skyhigh.notesservice.validation.flk;
+package org.skyhigh.notesservice.validation.flk.flk1000;
 
 import lombok.Getter;
 import org.skyhigh.notesservice.validation.exception.FlkException;
+import org.skyhigh.notesservice.validation.flk.CommonFlk;
 
-public class Flk10000005 extends CommonFlk {
-    @Getter private static final String code = "10000005";
-    @Getter private static final String message = "Тип файла не поддерживается";
+public class Flk10000014 extends CommonFlk {
+    @Getter private static final String code = "10000014";
+    @Getter private static final String message = "Заметка не содержит текстовый файл";
     @Getter private static final String fieldName = null;
 
-    public Flk10000005() {
+    public Flk10000014() {
         super(
                 null,
                 null,

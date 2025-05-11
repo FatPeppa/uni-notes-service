@@ -14,8 +14,14 @@ public class FlkConfiguration {
     @Value("${flk.active}")
     private String[] activeFlkNames;
 
+    @Value("${spring.application.admin.admin-block-option-on}")
+    private boolean adminBlockOptionOn;
+
     @Bean("ActiveFlkList")
     public List<String> getActiveFlkList() {
         return Arrays.asList(activeFlkNames);
     }
+
+    @Bean("AdminBlockOptionOn")
+    public boolean getAdminBlockOptionOn() {return adminBlockOptionOn;}
 }

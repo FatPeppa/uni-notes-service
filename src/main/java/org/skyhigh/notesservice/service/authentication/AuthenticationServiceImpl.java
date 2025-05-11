@@ -1,43 +1,66 @@
 package org.skyhigh.notesservice.service.authentication;
 
-import lombok.RequiredArgsConstructor;
 import org.skyhigh.notesservice.model.dto.authentication.AuthenticationResponse;
 import org.skyhigh.notesservice.model.dto.authentication.SignInRequest;
 import org.skyhigh.notesservice.model.dto.authentication.SignUpRequest;
 import org.skyhigh.notesservice.model.entity.Role;
 import org.skyhigh.notesservice.model.entity.User;
 import org.skyhigh.notesservice.service.user.UserService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
+import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserService userService;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final UUID defaultUserClientId;
+    private final UUID defaultAdminClientId;
+    private final boolean usingDefaultClientIdOn;
+
+    public AuthenticationServiceImpl(
+            UserService userService,
+            JwtService jwtService,
+            PasswordEncoder passwordEncoder,
+            AuthenticationManager authenticationManager,
+            @Qualifier("DefaultUserClientId") UUID defaultUserClientId,
+            @Qualifier("DefaultAdminClientId") UUID defaultAdminClientId,
+            @Qualifier("UsingDefaultClientIdOn") boolean usingDefaultClientIdOn
+    ) {
+        this.userService = userService;
+        this.jwtService = jwtService;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+        this.defaultUserClientId = defaultUserClientId;
+        this.defaultAdminClientId = defaultAdminClientId;
+        this.usingDefaultClientIdOn = usingDefaultClientIdOn;
+    }
 
     @Override
     public AuthenticationResponse signUp(SignUpRequest request) {
-        var user = User.builder()
+        var userBuilder = User.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.ROLE_USER)
                 .registerDate(ZonedDateTime.now())
                 .lastLogonDate(ZonedDateTime.now())
-                .blocked(false)
-                .build();
+                .blocked(false);
 
-        userService.create(user);
+        if (usingDefaultClientIdOn)
+            userBuilder.clientId(defaultUserClientId);
 
-        var accessToken = jwtService.generateAccessToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
+        userService.create(userBuilder.build());
+
+        var accessToken = jwtService.generateAccessToken(userBuilder.build());
+        var refreshToken = jwtService.generateRefreshToken(userBuilder.build());
         return AuthenticationResponse.builder()
                 .accessToken(accessToken)
                 .accessTokenExpiry(jwtService.extractAccessTokenExpiration(accessToken).toString())
@@ -108,20 +131,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public AuthenticationResponse signUpAdmin(SignUpRequest request) {
-        var user = User.builder()
+        var userBuilder = User.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.ROLE_ADMIN)
                 .registerDate(ZonedDateTime.now())
                 .lastLogonDate(ZonedDateTime.now())
-                .blocked(false)
-                .build();
+                .blocked(false);
 
-        userService.create(user);
+        if (usingDefaultClientIdOn)
+            userBuilder.clientId(defaultAdminClientId);
 
-        var accessToken = jwtService.generateAccessToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
+        userService.create(userBuilder.build());
+
+        var accessToken = jwtService.generateAccessToken(userBuilder.build());
+        var refreshToken = jwtService.generateRefreshToken(userBuilder.build());
         return AuthenticationResponse.builder()
                 .accessToken(accessToken)
                 .accessTokenExpiry(jwtService.extractAccessTokenExpiration(accessToken).toString())
